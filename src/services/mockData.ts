@@ -52,7 +52,9 @@ export interface Mark {
   score: number | null;
 }
 
-const API_URL = 'http://localhost:3000';
+// IMPORTANT: Replace this with your live Render Web Service URL (e.g. 'https://school-teacher-portal-backend.onrender.com')
+// Local testing: 'http://localhost:3000'
+const API_URL = 'YOUR_RENDER_URL_HERE';
 
 export const getTeachers = async (): Promise<Teacher[]> => {
   try {
