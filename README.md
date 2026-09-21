@@ -1,32 +1,31 @@
-# React + TypeScript + Vite
+# School Teacher Portal
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A beautiful, responsive web application for teachers to manage their classes, assignments, and exams.
 
-Currently, two official plugins are available:
+## Deploying the Backend to Render
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+You can instantly deploy the `json-server` database to Render.com by clicking the button below:
 
-## React Compiler
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+1. Click the button above.
+2. Sign in to Render (if you aren't already).
+3. The Blueprint will automatically create a Web Service named `school-teacher-backend`.
+4. Click "Apply" at the bottom of the screen.
+5. Wait a minute for the deploy to finish. Render will generate a URL for your live API (e.g., `https://school-teacher-backend.onrender.com`).
 
-## Expanding the Oxlint configuration
+### Connecting your GitHub Pages Frontend to the Live Backend
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+Once your backend is successfully deployed on Render:
+1. Open `src/services/mockData.ts` in your local project.
+2. Replace `'YOUR_RENDER_URL_HERE'` with your actual Render URL.
+3. Open your terminal and run `npm run deploy`.
+4. Your GitHub Pages site will now use your live database!
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
-```
+---
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## Local Development
+
+1. Clone the repository
+2. Run `npm install`
+3. Run `npm run dev` (This will start both the Vite frontend on port 5173 and the JSON Server on port 3000)
