@@ -23,6 +23,14 @@ export interface ClassInfo {
   studentsCount: number;
   subject: string;
   isClassTeacher: boolean;
+  // Extended fields for Class Workspace
+  teacherName?: string;
+  todayAttendance?: string;
+  overallAttendance?: string;
+  pendingAssignments?: number;
+  upcomingExams?: number;
+  academicYear?: string;
+  currentTerm?: string;
 }
 
 export interface Exam {
@@ -230,7 +238,20 @@ export const getExam = async (id: string): Promise<Exam | null> => {
 
 export const getClass = async (id: string): Promise<ClassInfo | null> => {
   const classes = await getClasses();
-  return classes.find(c => c.id === id) || null;
+  const cls = classes.find(c => c.id === id);
+  if (!cls) return null;
+  
+  // Inject mock data for extended workspace fields
+  return {
+    ...cls,
+    teacherName: cls.teacherName || 'Sarah Jenkins',
+    todayAttendance: cls.todayAttendance || '94%',
+    overallAttendance: cls.overallAttendance || '92%',
+    pendingAssignments: cls.pendingAssignments ?? 2,
+    upcomingExams: cls.upcomingExams ?? 1,
+    academicYear: cls.academicYear || '2026-2027',
+    currentTerm: cls.currentTerm || 'Term 1'
+  };
 };
 
 export const getAttendanceHistory = async (): Promise<any[]> => {
