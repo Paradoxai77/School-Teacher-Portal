@@ -52,6 +52,23 @@ export interface Mark {
   score: number | null;
 }
 
+export interface Submission {
+  id: string;
+  assignmentId: string;
+  studentId: string;
+  submittedAt: string;
+  status: 'Graded' | 'Ungraded' | 'Late';
+  score?: number;
+  feedback?: string;
+}
+
+export interface Subject {
+  id: string;
+  name: string;
+  classesCount: number;
+  studentsCount: number;
+}
+
 // IMPORTANT: Replace this with your live Render Web Service URL (e.g. 'https://school-teacher-portal-backend.onrender.com')
 // Local testing: 'http://localhost:3000'
 const API_URL = 'YOUR_RENDER_URL_HERE';
@@ -85,7 +102,18 @@ export const getStudents = async (classId: string): Promise<Student[]> => {
     return await res.json();
   } catch (error) {
     console.warn('Falling back to local db.json for students');
-    return (db as any).students || [];
+    return (db as any).students.filter((s: any) => s.classId === classId) || [];
+  }
+};
+
+export const getStudent = async (id: string): Promise<Student | null> => {
+  try {
+    const res = await fetch(`${API_URL}/students/${id}`);
+    if (!res.ok) throw new Error('API failed');
+    return await res.json();
+  } catch (error) {
+    console.warn('Falling back to local db.json for student');
+    return (db as any).students.find((s: any) => s.id === id) || null;
   }
 };
 
@@ -164,5 +192,54 @@ export const saveMarks = async (examId: string, marks: Mark[]): Promise<any> => 
     return await res.json();
   } catch (error) {
     return { success: true };
+  }
+};
+
+export const getSubmissions = async (assignmentId: string): Promise<Submission[]> => {
+  try {
+    const res = await fetch(`${API_URL}/submissions?assignmentId=${assignmentId}`);
+    if (!res.ok) throw new Error('API failed');
+    return await res.json();
+  } catch (error) {
+    console.warn('Falling back to local db.json for submissions');
+    return ((db as any).submissions || []).filter((s: Submission) => s.assignmentId === assignmentId);
+  }
+};
+
+export const getTeacherSubjects = async (teacherId: string): Promise<Subject[]> => {
+  // Mock logic to extract subjects from teacher
+  const teacher = (db.teachers as Teacher[]).find(t => t.id === teacherId);
+  if (!teacher) return [];
+  return teacher.subjects.map((subj, idx) => ({
+    id: `SUB${idx}`,
+    name: subj,
+    classesCount: Math.floor(Math.random() * 3) + 1,
+    studentsCount: Math.floor(Math.random() * 50) + 20
+  }));
+};
+
+export const getAssignment = async (id: string): Promise<Assignment | null> => {
+  const assignments = await getAssignments();
+  return assignments.find(a => a.id === id) || null;
+};
+
+export const getExam = async (id: string): Promise<Exam | null> => {
+  const exams = await getExams();
+  return exams.find(e => e.id === id) || null;
+};
+
+export const getClass = async (id: string): Promise<ClassInfo | null> => {
+  const classes = await getClasses();
+  return classes.find(c => c.id === id) || null;
+};
+
+export const getAttendanceHistory = async (): Promise<any[]> => {
+  try {
+    const res = await fetch(`${API_URL}/attendance`);
+    if (!res.ok) throw new Error('API failed');
+    return await res.json();
+  } catch (error) {
+    console.warn('Falling back to local db.json for attendance history');
+    return (db as any).attendance || [];
   }
 };

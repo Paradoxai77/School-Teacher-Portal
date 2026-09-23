@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
 import { getAssignments, createAssignment, type Assignment } from '../services/mockData';
-import { BookOpen, Calendar, Clock, CheckCircle, FilePlus, Users } from 'lucide-react';
+import { BookOpen, Calendar, ChevronRight, FilePlus, Users } from 'lucide-react';
 import { Modal } from './Modal';
+import { useNavigate } from 'react-router-dom';
 
 export function Assignments() {
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
   
-  const [modalType, setModalType] = useState<'new' | 'review' | 'report' | null>(null);
-  const [selectedAssignment, setSelectedAssignment] = useState<Assignment | null>(null);
+  const [isNewModalOpen, setIsNewModalOpen] = useState(false);
 
   // Form state
   const [title, setTitle] = useState('');
@@ -39,7 +40,7 @@ export function Assignments() {
       status: 'Active'
     });
     alert('Assignment created successfully!');
-    setModalType(null);
+    setIsNewModalOpen(false);
     setTitle('');
     setSubject('');
     setDueDate('');
@@ -62,14 +63,14 @@ export function Assignments() {
           <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Assignments</h1>
           <p>Create, manage, and review student assignments.</p>
         </div>
-        <button className="btn btn-primary" onClick={() => setModalType('new')}>
+        <button className="btn btn-primary" onClick={() => setIsNewModalOpen(true)}>
           <FilePlus size={18} /> New Assignment
         </button>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '1.5rem' }}>
         {assignments.map(assignment => (
-          <div key={assignment.id} className="card" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div key={assignment.id} className="card" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', cursor: 'pointer' }} onClick={() => navigate(`/app/assignments/${assignment.id}`)}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
                 <h3 style={{ fontSize: '1.25rem', marginBottom: '0.25rem', fontWeight: 600 }}>{assignment.title}</h3>
@@ -105,22 +106,15 @@ export function Assignments() {
             </div>
 
             <div style={{ display: 'flex', gap: '0.75rem', marginTop: 'auto' }}>
-              {assignment.status === 'Active' ? (
-                <button className="btn btn-primary" style={{ flex: 1 }} onClick={() => { setSelectedAssignment(assignment); setModalType('review'); }}>
-                  <Clock size={18} /> Review Pending
-                </button>
-              ) : (
-                <button className="btn btn-secondary" style={{ flex: 1 }} onClick={() => { setSelectedAssignment(assignment); setModalType('report'); }}>
-                  <CheckCircle size={18} /> View Report
-                </button>
-              )}
+              <button className="btn btn-secondary" style={{ width: '100%', justifyContent: 'space-between' }}>
+                View Assignment Workspace <ChevronRight size={20} />
+              </button>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Modals */}
-      <Modal isOpen={modalType === 'new'} onClose={() => setModalType(null)} title="Create New Assignment">
+      <Modal isOpen={isNewModalOpen} onClose={() => setIsNewModalOpen(false)} title="Create New Assignment">
         <form onSubmit={handleCreateAssignment} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem' }}>Title</label>
@@ -144,16 +138,6 @@ export function Assignments() {
           </div>
           <button type="submit" className="btn btn-primary" style={{ marginTop: '1rem' }}>Create Assignment</button>
         </form>
-      </Modal>
-
-      <Modal isOpen={modalType === 'review'} onClose={() => setModalType(null)} title={`Review: ${selectedAssignment?.title}`}>
-        <p>This is a simulated review screen. You would typically see pending student submissions here.</p>
-        <button className="btn btn-secondary" style={{ marginTop: '1rem', width: '100%' }} onClick={() => setModalType(null)}>Close</button>
-      </Modal>
-
-      <Modal isOpen={modalType === 'report'} onClose={() => setModalType(null)} title={`Report: ${selectedAssignment?.title}`}>
-        <p>This assignment is closed. The average score for this assignment was 85%.</p>
-        <button className="btn btn-secondary" style={{ marginTop: '1rem', width: '100%' }} onClick={() => setModalType(null)}>Close</button>
       </Modal>
     </div>
   );

@@ -1,16 +1,15 @@
 import { useState, useEffect } from 'react';
-import { getExams, createExam, getStudents, saveMarks, type Exam, type Student, type Mark } from '../services/mockData';
-import { ClipboardList, Calendar, Edit3, CheckCircle, FileText } from 'lucide-react';
+import { getExams, createExam, type Exam } from '../services/mockData';
+import { ClipboardList, Calendar, ChevronRight, FileText } from 'lucide-react';
 import { Modal } from './Modal';
+import { useNavigate } from 'react-router-dom';
 
 export function Exams() {
   const [exams, setExams] = useState<Exam[]>([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
   
-  const [modalType, setModalType] = useState<'new' | 'enter_marks' | 'view_marks' | null>(null);
-  const [selectedExam, setSelectedExam] = useState<Exam | null>(null);
-  const [students, setStudents] = useState<Student[]>([]);
-  const [marks, setMarks] = useState<Record<string, number | ''>>({});
+  const [isNewModalOpen, setIsNewModalOpen] = useState(false);
 
   // Form state
   const [title, setTitle] = useState('');
@@ -41,35 +40,11 @@ export function Exams() {
       status: 'Draft'
     });
     alert('Assessment created successfully!');
-    setModalType(null);
+    setIsNewModalOpen(false);
     setTitle('');
     setSubject('');
     setDate('');
     loadData();
-  };
-
-  const openMarksModal = async (exam: Exam, type: 'enter_marks' | 'view_marks') => {
-    setSelectedExam(exam);
-    setModalType(type);
-    const data = await getStudents(exam.classId);
-    setStudents(data);
-    if (type === 'enter_marks') {
-      const initialMarks: Record<string, number | ''> = {};
-      data.forEach(s => initialMarks[s.id] = '');
-      setMarks(initialMarks);
-    }
-  };
-
-  const handleSaveMarks = async () => {
-    if (!selectedExam) return;
-    const records: Mark[] = students.map(s => ({ 
-      studentId: s.id, 
-      examId: selectedExam.id, 
-      score: marks[s.id] === '' ? null : Number(marks[s.id]) 
-    }));
-    await saveMarks(selectedExam.id, records);
-    alert('Marks saved successfully!');
-    setModalType(null);
   };
 
   const getStatusBadge = (status: Exam['status']) => {
@@ -89,14 +64,14 @@ export function Exams() {
           <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Exams & Marks</h1>
           <p>Manage assessments and enter marks for your classes.</p>
         </div>
-        <button className="btn btn-primary" onClick={() => setModalType('new')}>
+        <button className="btn btn-primary" onClick={() => setIsNewModalOpen(true)}>
           <FileText size={18} /> New Assessment
         </button>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '1.5rem' }}>
         {exams.map(exam => (
-          <div key={exam.id} className="card" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div key={exam.id} className="card" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', cursor: 'pointer' }} onClick={() => navigate(`/app/exams/${exam.id}`)}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
                 <h3 style={{ fontSize: '1.25rem', marginBottom: '0.25rem', fontWeight: 600 }}>{exam.title}</h3>
@@ -117,21 +92,15 @@ export function Exams() {
             </div>
 
             <div style={{ display: 'flex', gap: '0.75rem', marginTop: 'auto' }}>
-              {exam.status === 'Draft' ? (
-                <button className="btn btn-primary" style={{ flex: 1 }} onClick={() => openMarksModal(exam, 'enter_marks')}>
-                  <Edit3 size={18} /> Enter Marks
-                </button>
-              ) : (
-                <button className="btn btn-secondary" style={{ flex: 1 }} onClick={() => openMarksModal(exam, 'view_marks')}>
-                  <CheckCircle size={18} /> View Marks
-                </button>
-              )}
+              <button className="btn btn-secondary" style={{ width: '100%', justifyContent: 'space-between' }}>
+                View Exam Workspace <ChevronRight size={20} />
+              </button>
             </div>
           </div>
         ))}
       </div>
 
-      <Modal isOpen={modalType === 'new'} onClose={() => setModalType(null)} title="Schedule New Assessment">
+      <Modal isOpen={isNewModalOpen} onClose={() => setIsNewModalOpen(false)} title="Schedule New Assessment">
         <form onSubmit={handleCreateExam} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem' }}>Title</label>
@@ -159,35 +128,6 @@ export function Exams() {
           </div>
           <button type="submit" className="btn btn-primary" style={{ marginTop: '1rem' }}>Schedule Assessment</button>
         </form>
-      </Modal>
-
-      <Modal isOpen={modalType === 'enter_marks'} onClose={() => setModalType(null)} title={`Enter Marks: ${selectedExam?.title}`}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <div style={{ maxHeight: '400px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            {students.map(s => (
-              <div key={s.id} style={{ padding: '0.5rem', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span>{s.name}</span>
-                <input 
-                  type="number" 
-                  min="0" 
-                  max={selectedExam?.maxMarks} 
-                  value={marks[s.id] ?? ''}
-                  onChange={e => setMarks(prev => ({ ...prev, [s.id]: e.target.value === '' ? '' : Number(e.target.value) }))}
-                  placeholder={`/ ${selectedExam?.maxMarks}`}
-                  style={{ width: '100px', padding: '0.25rem 0.5rem' }}
-                />
-              </div>
-            ))}
-          </div>
-          <button className="btn btn-primary" onClick={handleSaveMarks} style={{ marginTop: '1rem', width: '100%' }}>
-            Save Marks
-          </button>
-        </div>
-      </Modal>
-
-      <Modal isOpen={modalType === 'view_marks'} onClose={() => setModalType(null)} title={`Marks for ${selectedExam?.title}`}>
-        <p>This is a simulated screen. You would typically see the saved marks here.</p>
-        <button className="btn btn-secondary" style={{ marginTop: '1rem', width: '100%' }} onClick={() => setModalType(null)}>Close</button>
       </Modal>
     </div>
   );

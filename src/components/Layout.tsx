@@ -44,11 +44,20 @@ export function Layout() {
           <NavLink to="/app/classes" className={({isActive}) => `btn btn-secondary ${isActive ? 'active-nav' : ''}`} style={{ justifyContent: 'flex-start', border: 'none' }}>
             <Users size={20} /> My Classes
           </NavLink>
+          <NavLink to="/app/subjects" className={({isActive}) => `btn btn-secondary ${isActive ? 'active-nav' : ''}`} style={{ justifyContent: 'flex-start', border: 'none' }}>
+            <BookOpen size={20} /> My Subjects
+          </NavLink>
+          <NavLink to="/app/attendance" className={({isActive}) => `btn btn-secondary ${isActive ? 'active-nav' : ''}`} style={{ justifyContent: 'flex-start', border: 'none' }}>
+            <ClipboardList size={20} /> Attendance
+          </NavLink>
           <NavLink to="/app/assignments" className={({isActive}) => `btn btn-secondary ${isActive ? 'active-nav' : ''}`} style={{ justifyContent: 'flex-start', border: 'none' }}>
             <BookOpen size={20} /> Assignments
           </NavLink>
           <NavLink to="/app/exams" className={({isActive}) => `btn btn-secondary ${isActive ? 'active-nav' : ''}`} style={{ justifyContent: 'flex-start', border: 'none' }}>
             <ClipboardList size={20} /> Exams & Marks
+          </NavLink>
+          <NavLink to="/app/reports" className={({isActive}) => `btn btn-secondary ${isActive ? 'active-nav' : ''}`} style={{ justifyContent: 'flex-start', border: 'none' }}>
+            <LayoutDashboard size={20} /> Reports
           </NavLink>
         </nav>
 
