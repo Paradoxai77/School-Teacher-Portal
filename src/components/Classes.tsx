@@ -2,18 +2,24 @@ import { useState, useEffect } from 'react';
 import { getClasses, type ClassInfo } from '../services/mockData';
 import { Users, ChevronRight, UserCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 export function Classes() {
+  const { currentTeacher } = useAuth();
   const [classes, setClasses] = useState<ClassInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     getClasses().then(data => {
-      setClasses(data);
+      if (currentTeacher?.classesTaught) {
+        setClasses(data.filter(c => currentTeacher.classesTaught?.includes(c.id)));
+      } else {
+        setClasses(data);
+      }
       setLoading(false);
     });
-  }, []);
+  }, [currentTeacher]);
 
   if (loading) return <div>Loading classes...</div>;
 

@@ -8,7 +8,7 @@ export function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
   
-  const [email, setEmail] = useState('sarah@school.edu');
+  const [email, setEmail] = useState('amit.sharma@school.edu');
   const [password, setPassword] = useState('password123');
   const [error, setError] = useState('');
 

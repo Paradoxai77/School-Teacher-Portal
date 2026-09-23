@@ -2,103 +2,94 @@
   "teachers": [
     {
       "id": "T1",
-      "name": "Sarah Jenkins",
-      "email": "sarah@school.edu",
+      "name": "Mr. Amit Sharma",
+      "email": "amit.sharma@school.edu",
       "password": "password123",
       "role": "Class Teacher",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah",
-      "subjects": [
-        "Mathematics",
-        "Algebra",
-        "Geometry",
-        "Calculus",
-        "Statistics"
-      ]
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Amit",
+      "subjects": ["Mathematics", "Physics"],
+      "classesTaught": ["10th A", "11th Science"]
     },
     {
       "id": "T2",
-      "name": "Michael Chen",
-      "email": "michael@school.edu",
+      "name": "Ms. Sneha Patil",
+      "email": "sneha.patil@school.edu",
       "password": "password123",
       "role": "Subject Teacher",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Michael",
-      "subjects": [
-        "Physics",
-        "Chemistry",
-        "Biology",
-        "Earth Science",
-        "Astronomy"
-      ]
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Sneha",
+      "subjects": ["English Lit", "History"],
+      "classesTaught": ["10th B", "11th Commerce"]
     },
     {
       "id": "T3",
-      "name": "Emily Rodriguez",
-      "email": "emily@school.edu",
+      "name": "Mrs. Neha Gupta",
+      "email": "neha.gupta@school.edu",
       "password": "password123",
-      "role": "Class Teacher",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Emily",
-      "subjects": [
-        "World History",
-        "US History",
-        "Geography",
-        "Civics",
-        "Economics"
-      ]
+      "role": "Subject Teacher",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Neha",
+      "subjects": ["Chemistry", "Biology"],
+      "classesTaught": ["10th C", "11th Science"]
     },
     {
       "id": "T4",
-      "name": "David Smith",
-      "email": "david@school.edu",
+      "name": "Mr. Rohan Desai",
+      "email": "rohan.desai@school.edu",
       "password": "password123",
       "role": "Subject Teacher",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=David",
-      "subjects": [
-        "English Lit",
-        "Creative Writing",
-        "Grammar",
-        "Debate",
-        "Journalism"
-      ]
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Rohan",
+      "subjects": ["Economics", "Accountancy"],
+      "classesTaught": ["10th A", "11th Commerce"]
     },
     {
       "id": "T5",
-      "name": "Jessica Taylor",
-      "email": "jessica@school.edu",
+      "name": "Ms. Priya Iyer",
+      "email": "priya.iyer@school.edu",
       "password": "password123",
-      "role": "Both",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Jessica",
-      "subjects": [
-        "Physical Ed",
-        "Health",
-        "Nutrition",
-        "Sports Science",
-        "Yoga"
-      ]
+      "role": "Subject Teacher",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Priya",
+      "subjects": ["Computer Science", "Mathematics"],
+      "classesTaught": ["10th B", "11th Commerce"]
     }
   ],
   "classes": [
     {
-      "id": "C1",
+      "id": "10th A",
       "name": "Grade 10",
       "section": "A",
       "studentsCount": 32,
-      "subject": "Mathematics",
+      "subject": "General",
       "isClassTeacher": true
     },
     {
-      "id": "C2",
+      "id": "10th B",
       "name": "Grade 10",
       "section": "B",
       "studentsCount": 30,
-      "subject": "Mathematics",
+      "subject": "General",
       "isClassTeacher": false
     },
     {
-      "id": "C3",
+      "id": "10th C",
+      "name": "Grade 10",
+      "section": "C",
+      "studentsCount": 25,
+      "subject": "General",
+      "isClassTeacher": false
+    },
+    {
+      "id": "11th Science",
       "name": "Grade 11",
       "section": "Science",
       "studentsCount": 28,
-      "subject": "Physics",
+      "subject": "Science Core",
+      "isClassTeacher": false
+    },
+    {
+      "id": "11th Commerce",
+      "name": "Grade 11",
+      "section": "Commerce",
+      "studentsCount": 35,
+      "subject": "Commerce Core",
       "isClassTeacher": false
     }
   ],
@@ -107,188 +98,188 @@
       "id": "S1",
       "name": "Akhankhya patel",
       "rollNumber": "22-01",
-      "classId": "C1"
+      "classId": "10th A"
     },
     {
       "id": "S2",
       "name": "Anannya das",
       "rollNumber": "22-02",
-      "classId": "C1"
+      "classId": "10th A"
     },
     {
       "id": "S3",
       "name": "Anmool ratan behera",
       "rollNumber": "22-03",
-      "classId": "C1"
+      "classId": "10th A"
     },
     {
       "id": "S4",
       "name": "Ansuman Priyadarshi",
       "rollNumber": "22-04",
-      "classId": "C1"
+      "classId": "10th A"
     },
     {
       "id": "S5",
       "name": "Balram Khamari",
       "rollNumber": "22-05",
-      "classId": "C1"
+      "classId": "10th A"
     },
     {
       "id": "S6",
       "name": "Basundhara Pradhan",
       "rollNumber": "22-06",
-      "classId": "C1"
+      "classId": "10th A"
     },
     {
       "id": "S7",
       "name": "Lizarani Jena",
       "rollNumber": "22-07",
-      "classId": "C1"
+      "classId": "10th A"
     },
     {
       "id": "S8",
       "name": "Manas Ranjan Patra",
       "rollNumber": "22-08",
-      "classId": "C1"
+      "classId": "10th A"
     },
     {
       "id": "S9",
       "name": "Monalisa Gordia",
       "rollNumber": "22-09",
-      "classId": "C1"
+      "classId": "10th A"
     },
     {
       "id": "S10",
       "name": "Monica Ekka",
       "rollNumber": "22-10",
-      "classId": "C1"
+      "classId": "10th A"
     },
     {
       "id": "S11",
       "name": "Pritam Ghadei",
       "rollNumber": "22-11",
-      "classId": "C1"
+      "classId": "10th A"
     },
     {
       "id": "S12",
       "name": "Somya Ranjan Sahu",
       "rollNumber": "22-12",
-      "classId": "C1"
+      "classId": "10th A"
     },
     {
       "id": "S13",
       "name": "Subhrajit Jena",
       "rollNumber": "22-13",
-      "classId": "C1"
+      "classId": "10th A"
     },
     {
       "id": "S14",
       "name": "Tamanna Sharma",
       "rollNumber": "22-14",
-      "classId": "C1"
+      "classId": "10th A"
     },
     {
       "id": "S15",
       "name": "Baby Munda",
       "rollNumber": "23-01",
-      "classId": "C2"
+      "classId": "10th B"
     },
     {
       "id": "S16",
       "name": "Bandita Naik",
       "rollNumber": "23-02",
-      "classId": "C2"
+      "classId": "10th B"
     },
     {
       "id": "S17",
       "name": "Pratap Kumar Pati",
       "rollNumber": "23-03",
-      "classId": "C2"
+      "classId": "10th B"
     },
     {
       "id": "S18",
       "name": "Deepika Kerketa",
       "rollNumber": "23-04",
-      "classId": "C2"
+      "classId": "10th B"
     },
     {
       "id": "S19",
       "name": "Rajesh Kumar Ojha",
       "rollNumber": "23-05",
-      "classId": "C2"
+      "classId": "10th B"
     },
     {
       "id": "S20",
       "name": "Sritam Kumar Behera",
       "rollNumber": "23-06",
-      "classId": "C2"
+      "classId": "10th B"
     },
     {
       "id": "S21",
       "name": "Basundhra Puala",
       "rollNumber": "23-07",
-      "classId": "C2"
+      "classId": "10th B"
     },
     {
       "id": "S22",
       "name": "Munu Chinera",
       "rollNumber": "23-08",
-      "classId": "C2"
+      "classId": "10th B"
     },
     {
       "id": "S23",
       "name": "Jyotirmayee Jena",
       "rollNumber": "23-09",
-      "classId": "C2"
+      "classId": "10th B"
     },
     {
       "id": "S24",
       "name": "Ankita Behera",
       "rollNumber": "23-10",
-      "classId": "C2"
+      "classId": "10th B"
     },
     {
       "id": "S25",
       "name": "Arghya Arpita Nayak",
       "rollNumber": "23-11",
-      "classId": "C2"
+      "classId": "10th B"
     },
     {
       "id": "S26",
       "name": "Dibyaranjan Bhoi",
       "rollNumber": "23-12",
-      "classId": "C2"
+      "classId": "10th B"
     },
     {
       "id": "S27",
       "name": "Dinesh Barik",
       "rollNumber": "23-13",
-      "classId": "C2"
+      "classId": "10th B"
     },
     {
       "id": "S28",
       "name": "Sabyasachi Barik",
       "rollNumber": "23-14",
-      "classId": "C2"
+      "classId": "10th B"
     },
     {
       "id": "S29",
       "name": "Shakti Ranjan Patra",
       "rollNumber": "23-15",
-      "classId": "C2"
+      "classId": "10th B"
     },
     {
       "id": "S30",
       "name": "Kausiknanda Nalia",
       "rollNumber": "23-16",
-      "classId": "C2"
+      "classId": "10th B"
     }
   ],
   "exams": [
     {
       "id": "E1",
       "title": "Mid-Term Assessment",
-      "classId": "C1",
+      "classId": "10th A",
       "subject": "Mathematics",
       "date": "2026-10-15",
       "maxMarks": 100,
@@ -297,7 +288,7 @@
     {
       "id": "E2",
       "title": "Unit Test 1",
-      "classId": "C1",
+      "classId": "10th A",
       "subject": "Mathematics",
       "date": "2026-09-05",
       "maxMarks": 50,
@@ -306,7 +297,7 @@
     {
       "id": "E3",
       "title": "Mid-Term Assessment",
-      "classId": "C3",
+      "classId": "11th Science",
       "subject": "Physics",
       "date": "2026-10-18",
       "maxMarks": 100,
@@ -317,7 +308,7 @@
     {
       "id": "A1",
       "title": "Algebra Worksheet 1",
-      "classId": "C1",
+      "classId": "10th A",
       "subject": "Mathematics",
       "dueDate": "2026-09-25",
       "submissionsCount": 15,
@@ -327,7 +318,7 @@
     {
       "id": "A2",
       "title": "Geometry Proofs",
-      "classId": "C2",
+      "classId": "10th B",
       "subject": "Mathematics",
       "dueDate": "2026-09-22",
       "submissionsCount": 20,
@@ -337,7 +328,7 @@
     {
       "id": "A3",
       "title": "Physics Lab Report",
-      "classId": "C3",
+      "classId": "11th Science",
       "subject": "Physics",
       "dueDate": "2026-09-18",
       "submissionsCount": 28,
@@ -347,7 +338,7 @@
   ],
   "attendance": [
     {
-      "classId": "C2",
+      "classId": "10th B",
       "date": "2026-09-21T20:04:31.409Z",
       "records": [
         {
@@ -418,13 +409,13 @@
       "id": "tvnpJoJmWcE"
     },
     {
-      "classId": "C3",
+      "classId": "11th Science",
       "date": "2026-09-21T20:04:38.514Z",
       "records": [],
       "id": "uem3pBPr99E"
     },
     {
-      "classId": "C1",
+      "classId": "10th A",
       "date": "2026-09-21T20:16:36.444Z",
       "records": [
         {

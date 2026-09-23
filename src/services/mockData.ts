@@ -8,6 +8,7 @@ export interface Teacher {
   role: 'Class Teacher' | 'Subject Teacher' | 'Both';
   avatar: string;
   subjects: string[];
+  classesTaught?: string[];
 }
 
 export interface Student {
