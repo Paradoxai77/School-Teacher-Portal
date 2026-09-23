@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getClass, getStudents, saveAttendance, type ClassInfo, type Student } from '../services/mockData';
+import { getClass, getStudents, saveAttendance, getClassSubjects, type ClassInfo, type Student, type ClassSubject } from '../services/mockData';
+import { useAuth } from '../contexts/AuthContext';
 import { 
   Users, ArrowLeft, Calendar, LayoutDashboard, ClipboardList, BookOpen, 
   FileText, CheckCircle, TrendingUp, MessageSquare, Plus, Edit3, UserCheck, UserX, Activity
@@ -12,8 +13,10 @@ type Tab = 'overview' | 'students' | 'attendance' | 'subjects' | 'assignments' |
 export function ClassDetails() {
   const { classId } = useParams();
   const navigate = useNavigate();
+  const { currentTeacher } = useAuth();
   const [classInfo, setClassInfo] = useState<ClassInfo | null>(null);
   const [students, setStudents] = useState<Student[]>([]);
+  const [subjects, setSubjects] = useState<ClassSubject[]>([]);
   const [loading, setLoading] = useState(true);
   
   const [activeTab, setActiveTab] = useState<Tab>('overview');
@@ -25,13 +28,22 @@ export function ClassDetails() {
     if (!classId) return;
     Promise.all([
       getClass(classId),
-      getStudents(classId)
-    ]).then(([cls, stus]) => {
+      getStudents(classId),
+      getClassSubjects(classId)
+    ]).then(([cls, stus, subjs]) => {
       setClassInfo(cls);
       setStudents(stus);
+      
+      // Access Control: Filter subjects if they are only a Subject Teacher
+      if (cls && !cls.isClassTeacher && currentTeacher) {
+        setSubjects(subjs.filter(s => currentTeacher.subjects.includes(s.subjectName)));
+      } else {
+        setSubjects(subjs);
+      }
+      
       setLoading(false);
     });
-  }, [classId]);
+  }, [classId, currentTeacher]);
 
   const openAttendance = () => {
     const initialAtt: Record<string, boolean> = {};
@@ -244,8 +256,83 @@ export function ClassDetails() {
           </div>
         )}
 
+        {/* Subjects Tab */}
+        {activeTab === 'subjects' && (
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 600 }}>Assigned Subjects</h2>
+              {!classInfo.isClassTeacher && (
+                <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', backgroundColor: 'var(--bg-color)', padding: '0.25rem 0.75rem', borderRadius: 'var(--radius-full)' }}>
+                  Filtered: Subject Teacher View
+                </span>
+              )}
+            </div>
+            
+            <div style={{ backgroundColor: 'var(--bg-color)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-color)', overflow: 'hidden' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                <thead>
+                  <tr style={{ backgroundColor: 'var(--secondary-color)', borderBottom: '1px solid var(--border-color)' }}>
+                    <th style={{ padding: '1rem' }}>Subject Name</th>
+                    <th style={{ padding: '1rem' }}>Subject Teacher</th>
+                    <th style={{ padding: '1rem' }}>Recent Assessment</th>
+                    <th style={{ padding: '1rem' }}>Class Average</th>
+                    <th style={{ padding: '1rem' }}>Pending Activity</th>
+                    <th style={{ padding: '1rem', textAlign: 'right' }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {subjects.map(subj => {
+                    const canEdit = currentTeacher?.subjects.includes(subj.subjectName) || false;
+                    
+                    return (
+                      <tr key={subj.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
+                        <td style={{ padding: '1rem', fontWeight: 500 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <BookOpen size={16} color="var(--primary-color)" />
+                            {subj.subjectName}
+                          </div>
+                        </td>
+                        <td style={{ padding: '1rem' }}>{subj.subjectTeacherName}</td>
+                        <td style={{ padding: '1rem', color: 'var(--text-secondary)' }}>{subj.recentAssessment}</td>
+                        <td style={{ padding: '1rem', fontWeight: 600 }}>{subj.classAverage}</td>
+                        <td style={{ padding: '1rem' }}>
+                          {subj.pendingActivity !== 'None' ? (
+                            <span style={{ color: 'var(--warning)', fontSize: '0.85rem', padding: '0.1rem 0.5rem', backgroundColor: 'rgba(245, 158, 11, 0.1)', borderRadius: '12px' }}>
+                              {subj.pendingActivity}
+                            </span>
+                          ) : (
+                            <span style={{ color: 'var(--success)', fontSize: '0.85rem' }}>Up to date</span>
+                          )}
+                        </td>
+                        <td style={{ padding: '1rem', textAlign: 'right' }}>
+                          {canEdit ? (
+                            <button className="btn btn-primary" style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }} onClick={() => navigate('/app/exams')}>
+                              <Edit3 size={14} style={{ display: 'inline', marginRight: '0.25rem' }} /> Manage
+                            </button>
+                          ) : (
+                            <button className="btn btn-secondary" style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
+                              View Only
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                  {subjects.length === 0 && (
+                    <tr>
+                      <td colSpan={6} style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                        No subjects found matching your access scope.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
         {/* Placeholders for Stage 1 un-implemented complex tabs */}
-        {['attendance', 'subjects', 'assignments', 'exams', 'performance', 'remarks'].includes(activeTab) && (
+        {['attendance', 'assignments', 'exams', 'performance', 'remarks'].includes(activeTab) && (
           <div className="card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '4rem', color: 'var(--text-secondary)' }}>
             <h3 style={{ marginBottom: '1rem', color: 'var(--text-primary)' }}>{activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Workspace Integration</h3>
             <p style={{ textAlign: 'center', maxWidth: '500px' }}>

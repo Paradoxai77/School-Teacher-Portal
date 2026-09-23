@@ -77,6 +77,15 @@ export interface Subject {
   studentsCount: number;
 }
 
+export interface ClassSubject {
+  id: string;
+  subjectName: string;
+  subjectTeacherName: string;
+  recentAssessment: string;
+  classAverage: string;
+  pendingActivity: string;
+}
+
 // IMPORTANT: Replace this with your live Render Web Service URL (e.g. 'https://school-teacher-portal-backend.onrender.com')
 // Local testing: 'http://localhost:3000'
 const API_URL = 'YOUR_RENDER_URL_HERE';
@@ -263,4 +272,15 @@ export const getAttendanceHistory = async (): Promise<any[]> => {
     console.warn('Falling back to local db.json for attendance history');
     return (db as any).attendance || [];
   }
+};
+
+export const getClassSubjects = async (_classId: string): Promise<ClassSubject[]> => {
+  // Mock data for Stage 1 requirements
+  return [
+    { id: 'CS1', subjectName: 'Mathematics', subjectTeacherName: 'Sarah Jenkins', recentAssessment: 'Unit Test 1', classAverage: '85%', pendingActivity: 'Grade Algebra Worksheet' },
+    { id: 'CS2', subjectName: 'Physics', subjectTeacherName: 'Michael Chen', recentAssessment: 'Mid-Term Assessment', classAverage: '88%', pendingActivity: 'None' },
+    { id: 'CS3', subjectName: 'Chemistry', subjectTeacherName: 'Michael Chen', recentAssessment: 'Lab Report', classAverage: '79%', pendingActivity: 'Assign Homework' },
+    { id: 'CS4', subjectName: 'English Lit', subjectTeacherName: 'David Smith', recentAssessment: 'Essay Draft 1', classAverage: '91%', pendingActivity: 'Grade Essays' },
+    { id: 'CS5', subjectName: 'World History', subjectTeacherName: 'Emily Rodriguez', recentAssessment: 'Chapter 4 Quiz', classAverage: '74%', pendingActivity: 'Review Quiz Results' },
+  ];
 };
