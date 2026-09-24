@@ -7,7 +7,7 @@
       "password": "password123",
       "role": "Class Teacher",
       "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Amit",
-      "subjects": ["Mathematics", "Physics"],
+      "subjects": ["Mathematics"],
       "classesTaught": ["10th A", "11th Science"]
     },
     {
