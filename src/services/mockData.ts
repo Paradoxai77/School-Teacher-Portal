@@ -319,3 +319,68 @@ export const getClassSubjects = async (_classId: string): Promise<ClassSubject[]
     { id: 'CS5', subjectName: 'Economics', subjectTeacherName: 'Mr. Rohan Desai', recentAssessment: 'Chapter 4 Quiz', classAverage: '74%', pendingActivity: 'Review Quiz Results' },
   ];
 };
+
+export interface StudentSubjectRecord {
+  id: string;
+  subjectName: string;
+  scorePct: number;
+}
+
+export interface StudentAssignmentRecord {
+  id: string;
+  assignmentTitle: string;
+  subjectName: string;
+  dueDate: string;
+  status: 'Submitted' | 'Late' | 'Pending';
+  score: string;
+  feedback: string;
+}
+
+export interface StudentExamRecord {
+  id: string;
+  examTitle: string;
+  subjectName: string;
+  marksObtained: number;
+  maxMarks: number;
+  percentage: number;
+  status: 'Passed' | 'Failed' | 'Pending';
+}
+
+export interface StudentRemark {
+  id: string;
+  date: string;
+  teacherName: string;
+  remark: string;
+}
+
+export const getStudentSubjects = async (_studentId: string): Promise<StudentSubjectRecord[]> => {
+  return [
+    { id: '1', subjectName: 'Mathematics', scorePct: 84 },
+    { id: '2', subjectName: 'Physics', scorePct: 76 },
+    { id: '3', subjectName: 'English Lit', scorePct: 88 },
+    { id: '4', subjectName: 'Chemistry', scorePct: 82 },
+  ];
+};
+
+export const getStudentAssignments = async (_studentId: string): Promise<StudentAssignmentRecord[]> => {
+  return [
+    { id: '1', assignmentTitle: 'Algebra Worksheet', subjectName: 'Mathematics', dueDate: '2026-10-01', status: 'Submitted', score: '9/10', feedback: 'Good work' },
+    { id: '2', assignmentTitle: 'Mid-Term Essay', subjectName: 'English Lit', dueDate: '2026-10-05', status: 'Pending', score: '-', feedback: '-' },
+    { id: '3', assignmentTitle: 'Lab Report 3', subjectName: 'Physics', dueDate: '2026-09-20', status: 'Late', score: '7.5/10', feedback: 'Deducted for lateness' },
+  ];
+};
+
+export const getStudentExams = async (_studentId: string): Promise<StudentExamRecord[]> => {
+  return [
+    { id: '1', examTitle: 'Unit Test 1', subjectName: 'Mathematics', marksObtained: 42, maxMarks: 50, percentage: 84, status: 'Passed' },
+    { id: '2', examTitle: 'Mid-Term', subjectName: 'Physics', marksObtained: 38, maxMarks: 50, percentage: 76, status: 'Passed' },
+    { id: '3', examTitle: 'Quarterly', subjectName: 'English Lit', marksObtained: 88, maxMarks: 100, percentage: 88, status: 'Passed' },
+  ];
+};
+
+export const getStudentRemarks = async (_studentId: string): Promise<StudentRemark[]> => {
+  return [
+    { id: '1', date: '2026-09-15', teacherName: 'Mr. Amit Sharma', remark: 'Excellent participation in class discussions.' },
+    { id: '2', date: '2026-08-20', teacherName: 'Mrs. Neha Gupta', remark: 'Needs to focus more during practical sessions.' },
+  ];
+};
