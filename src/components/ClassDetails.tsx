@@ -4,7 +4,8 @@ import { getClass, getStudents, saveAttendance, getClassSubjects, type ClassInfo
 import { useAuth } from '../contexts/AuthContext';
 import { 
   Users, ArrowLeft, Calendar, LayoutDashboard, ClipboardList, BookOpen, 
-  FileText, CheckCircle, TrendingUp, MessageSquare, Plus, Edit3, UserCheck, UserX, Activity
+  FileText, CheckCircle, TrendingUp, MessageSquare, Plus, Edit3, UserCheck, UserX, Activity,
+  Search, ArrowUpRight, ArrowRight, ArrowDownRight
 } from 'lucide-react';
 import { Modal } from './Modal';
 
@@ -20,6 +21,12 @@ export function ClassDetails() {
   const [loading, setLoading] = useState(true);
   
   const [activeTab, setActiveTab] = useState<Tab>('overview');
+  
+  // Student List Filters
+  const [searchQuery, setSearchQuery] = useState('');
+  const [attendanceFilter, setAttendanceFilter] = useState('All');
+  const [performanceFilter, setPerformanceFilter] = useState('All');
+  const [statusFilter, setStatusFilter] = useState('All');
 
   const [isAttendanceModalOpen, setIsAttendanceModalOpen] = useState(false);
   const [attendance, setAttendance] = useState<Record<string, boolean>>({});
@@ -44,6 +51,21 @@ export function ClassDetails() {
       setLoading(false);
     });
   }, [classId, currentTeacher]);
+
+  const filteredStudents = students.filter(s => {
+    if (searchQuery && !s.name.toLowerCase().includes(searchQuery.toLowerCase()) && !s.rollNumber.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+    
+    if (attendanceFilter !== 'All') {
+      if (attendanceFilter === '< 80%' && s.attendancePct! >= 80) return false;
+      if (attendanceFilter === '80% - 90%' && (s.attendancePct! < 80 || s.attendancePct! > 90)) return false;
+      if (attendanceFilter === '> 90%' && s.attendancePct! <= 90) return false;
+    }
+    
+    if (performanceFilter !== 'All' && s.recentPerformance !== performanceFilter) return false;
+    if (statusFilter !== 'All' && s.status !== statusFilter) return false;
+    
+    return true;
+  });
 
   const openAttendance = () => {
     const initialAtt: Record<string, boolean> = {};
@@ -222,31 +244,99 @@ export function ClassDetails() {
 
         {activeTab === 'students' && (
           <div>
+            <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+              <div style={{ position: 'relative', flex: '1 1 250px' }}>
+                <Search size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} />
+                <input 
+                  type="text" 
+                  placeholder="Search by name or roll number..." 
+                  className="input-field w-full" 
+                  style={{ paddingLeft: '2.5rem' }} 
+                  value={searchQuery} 
+                  onChange={e => setSearchQuery(e.target.value)} 
+                />
+              </div>
+              <select className="input-field" value={attendanceFilter} onChange={e => setAttendanceFilter(e.target.value)}>
+                <option value="All">All Attendance</option>
+                <option value="> 90%">{'>'} 90%</option>
+                <option value="80% - 90%">80% - 90%</option>
+                <option value="< 80%">&lt; 80%</option>
+              </select>
+              <select className="input-field" value={performanceFilter} onChange={e => setPerformanceFilter(e.target.value)}>
+                <option value="All">All Performance</option>
+                <option value="Up">Trending Up</option>
+                <option value="Stable">Stable</option>
+                <option value="Down">Trending Down</option>
+              </select>
+              <select className="input-field" value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
+                <option value="All">All Statuses</option>
+                <option value="Excellent">Excellent</option>
+                <option value="Good">Good</option>
+                <option value="Needs Attention">Needs Attention</option>
+                <option value="Critical">Critical</option>
+              </select>
+            </div>
+
             <div style={{ backgroundColor: 'var(--bg-color)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-color)', overflow: 'hidden' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                 <thead>
                   <tr style={{ backgroundColor: 'var(--secondary-color)', borderBottom: '1px solid var(--border-color)' }}>
                     <th style={{ padding: '1rem' }}>Roll Number</th>
                     <th style={{ padding: '1rem' }}>Name</th>
+                    <th style={{ padding: '1rem' }}>Attendance</th>
+                    <th style={{ padding: '1rem' }}>Academic Avg</th>
+                    <th style={{ padding: '1rem' }}>Pending Work</th>
+                    <th style={{ padding: '1rem' }}>Trend</th>
+                    <th style={{ padding: '1rem' }}>Status</th>
                     <th style={{ padding: '1rem', textAlign: 'right' }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {students.map(s => (
-                    <tr key={s.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
-                      <td style={{ padding: '1rem' }}>{s.rollNumber}</td>
-                      <td style={{ padding: '1rem', fontWeight: 500 }}>{s.name}</td>
-                      <td style={{ padding: '1rem', textAlign: 'right' }}>
-                        <button className="btn btn-secondary" onClick={() => navigate(`/app/classes/${classInfo.id}/student/${s.id}`)}>
-                          Academic View
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                  {students.length === 0 && (
+                  {filteredStudents.map(s => {
+                    const getTrendIcon = () => {
+                      if (s.recentPerformance === 'Up') return <ArrowUpRight size={16} color="var(--success)" />;
+                      if (s.recentPerformance === 'Down') return <ArrowDownRight size={16} color="var(--danger)" />;
+                      return <ArrowRight size={16} color="var(--text-secondary)" />;
+                    };
+                    
+                    const getStatusBadge = () => {
+                      if (s.status === 'Excellent') return <span style={{ color: 'var(--success)', padding: '0.2rem 0.5rem', backgroundColor: 'rgba(16, 185, 129, 0.1)', borderRadius: '12px', fontSize: '0.85rem' }}>{s.status}</span>;
+                      if (s.status === 'Good') return <span style={{ color: 'var(--text-primary)', padding: '0.2rem 0.5rem', backgroundColor: 'var(--bg-color)', border: '1px solid var(--border-color)', borderRadius: '12px', fontSize: '0.85rem' }}>{s.status}</span>;
+                      if (s.status === 'Needs Attention') return <span style={{ color: 'var(--warning)', padding: '0.2rem 0.5rem', backgroundColor: 'rgba(245, 158, 11, 0.1)', borderRadius: '12px', fontSize: '0.85rem' }}>{s.status}</span>;
+                      return <span style={{ color: 'var(--danger)', padding: '0.2rem 0.5rem', backgroundColor: 'rgba(239, 68, 68, 0.1)', borderRadius: '12px', fontSize: '0.85rem' }}>{s.status}</span>;
+                    };
+
+                    return (
+                      <tr key={s.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
+                        <td style={{ padding: '1rem', color: 'var(--text-secondary)' }}>{s.rollNumber}</td>
+                        <td style={{ padding: '1rem', fontWeight: 500 }}>{s.name}</td>
+                        <td style={{ padding: '1rem' }}>
+                          <span style={{ color: (s.attendancePct || 0) < 80 ? 'var(--danger)' : 'inherit' }}>
+                            {s.attendancePct}%
+                          </span>
+                        </td>
+                        <td style={{ padding: '1rem', fontWeight: 600 }}>{s.academicAverage}%</td>
+                        <td style={{ padding: '1rem' }}>
+                          {s.pendingAssignments! > 0 ? (
+                            <span style={{ color: 'var(--warning)' }}>{s.pendingAssignments} missing</span>
+                          ) : (
+                            <span style={{ color: 'var(--text-secondary)' }}>None</span>
+                          )}
+                        </td>
+                        <td style={{ padding: '1rem' }}>{getTrendIcon()}</td>
+                        <td style={{ padding: '1rem' }}>{getStatusBadge()}</td>
+                        <td style={{ padding: '1rem', textAlign: 'right' }}>
+                          <button className="btn btn-secondary" style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }} onClick={() => navigate(`/app/classes/${classInfo.id}/student/${s.id}`)}>
+                            Academic View
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                  {filteredStudents.length === 0 && (
                     <tr>
-                      <td colSpan={3} style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
-                        No students enrolled in this class.
+                      <td colSpan={8} style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                        No students found matching your filters.
                       </td>
                     </tr>
                   )}

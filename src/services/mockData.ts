@@ -15,6 +15,11 @@ export interface Student {
   id: string;
   name: string;
   rollNumber: string;
+  attendancePct?: number;
+  academicAverage?: number;
+  pendingAssignments?: number;
+  recentPerformance?: 'Up' | 'Down' | 'Stable';
+  status?: 'Excellent' | 'Good' | 'Needs Attention' | 'Critical';
 }
 
 export interface ClassInfo {
@@ -117,12 +122,41 @@ export const getStudents = async (classId: string): Promise<Student[]> => {
   try {
     const res = await fetch(`${API_URL}/students?classId=${classId}`);
     if (!res.ok) throw new Error('API failed');
-    return await res.json();
+    const students: Student[] = await res.json();
+    return enrichStudents(students);
   } catch (error) {
     console.warn('Falling back to local db.json for students');
-    return (db as any).students.filter((s: any) => s.classId === classId) || [];
+    const students = (db as any).students.filter((s: any) => s.classId === classId) || [];
+    return enrichStudents(students);
   }
 };
+
+function enrichStudents(students: any[]): Student[] {
+  return students.map((s, idx) => {
+    // Generate deterministic mock data based on index
+    const attendancePct = 70 + (idx * 7) % 30; // 70 to 99
+    const academicAverage = 65 + (idx * 5) % 35; // 65 to 100
+    const pendingAssignments = (idx * 3) % 4; // 0 to 3
+    
+    let status: Student['status'] = 'Good';
+    if (academicAverage > 90 && attendancePct > 90) status = 'Excellent';
+    else if (academicAverage < 75 || attendancePct < 80) status = 'Needs Attention';
+    if (academicAverage < 65 || attendancePct < 70) status = 'Critical';
+
+    let recentPerformance: Student['recentPerformance'] = 'Stable';
+    if (idx % 3 === 0) recentPerformance = 'Up';
+    if (idx % 4 === 0) recentPerformance = 'Down';
+
+    return {
+      ...s,
+      attendancePct,
+      academicAverage,
+      pendingAssignments,
+      recentPerformance,
+      status
+    };
+  });
+}
 
 export const getStudent = async (id: string): Promise<Student | null> => {
   try {
