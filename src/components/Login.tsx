@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Mail, Lock, Eye, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
+import { Mail, Lock, Eye, ArrowUpRight, ArrowDownLeft, Home } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { getTeachers } from '../services/mockData';
 
@@ -50,9 +50,18 @@ export function Login() {
       }}>
         {/* Header */}
         <div>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '4rem' }}>
-            SchoolEnterprise
-          </h2>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4rem' }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+              SchoolEnterprise
+            </h2>
+            <button 
+              onClick={() => navigate('/')}
+              className="btn btn-secondary" 
+              style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem' }}
+            >
+              <Home size={18} /> Home
+            </button>
+          </div>
           
           <h1 style={{ fontSize: '3.5rem', fontWeight: 400, color: 'var(--text-primary)', lineHeight: '1.1', marginBottom: '1rem' }}>
             Welcome to <br /> SchoolEnterprise
