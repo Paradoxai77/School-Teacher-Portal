@@ -95,7 +95,7 @@ export interface Submission {
 export interface Subject {
   id: string;
   name: string;
-  classesCount: number;
+  classes: string[];
   studentsCount: number;
 }
 
@@ -353,12 +353,16 @@ export const getTeacherSubjects = async (teacherId: string): Promise<Subject[]> 
   // Mock logic to extract subjects from teacher
   const teacher = (db.teachers as Teacher[]).find(t => t.id === teacherId);
   if (!teacher) return [];
-  return teacher.subjects.map((subj, idx) => ({
-    id: `SUB${idx}`,
-    name: subj,
-    classesCount: Math.floor(Math.random() * 3) + 1,
-    studentsCount: Math.floor(Math.random() * 50) + 20
-  }));
+  return teacher.subjects.map((subj, idx) => {
+    // Generate realistic class names based on index
+    const classNames = idx % 2 === 0 ? ['Grade 10-A', 'Grade 10-B'] : ['Grade 11-Science'];
+    return {
+      id: `SUB${idx}`,
+      name: subj,
+      classes: classNames,
+      studentsCount: classNames.length * 32
+    };
+  });
 };
 
 export const getAssignment = async (id: string): Promise<Assignment | null> => {

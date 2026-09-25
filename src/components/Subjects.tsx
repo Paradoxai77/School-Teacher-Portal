@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getTeacherSubjects, type Subject } from '../services/mockData';
 import { useAuth } from '../contexts/AuthContext';
-import { BookOpen, Users, ChevronRight } from 'lucide-react';
+import { BookOpen, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export function Subjects() {
@@ -40,11 +40,11 @@ export function Subjects() {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', color: 'var(--text-secondary)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <BookOpen size={18} /> {s.classesCount} Classes
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Users size={18} /> {s.studentsCount} Students Total
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
+                <BookOpen size={18} style={{ marginTop: '0.1rem' }} />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                  {s.classes.map(c => <span key={c}>{c}</span>)}
+                </div>
               </div>
             </div>
 
