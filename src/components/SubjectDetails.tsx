@@ -126,9 +126,11 @@ export function SubjectDetails() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-secondary)' }}>
                     <Users size={18} /> ~32 Students
                   </div>
-                  <button className="btn btn-secondary" style={{ marginTop: 'auto', width: '100%', justifyContent: 'space-between' }} onClick={() => navigate('/app/classes')}>
-                    Go to Class Workspace <ChevronRight size={18} />
-                  </button>
+                  <div style={{ marginTop: 'auto', paddingTop: '1rem' }}>
+                    <button className="btn btn-secondary text-sm" style={{ padding: '0.4rem 0.8rem' }} onClick={() => navigate('/app/classes')}>
+                      Go to Class Workspace <ChevronRight size={16} />
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>

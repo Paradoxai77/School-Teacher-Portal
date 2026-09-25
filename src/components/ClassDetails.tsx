@@ -211,7 +211,9 @@ export function ClassDetails() {
                     <span style={{ color: 'var(--warning)', fontWeight: 500 }}>15/32 Submitted</span>
                   </li>
                 </ul>
-                <button className="btn btn-secondary" style={{ width: '100%', marginTop: '1rem' }} onClick={() => navigate('/app/assignments')}>View All</button>
+                <div>
+                  <button className="btn btn-secondary text-sm" style={{ marginTop: '1rem', padding: '0.4rem 0.8rem' }} onClick={() => navigate('/app/assignments')}>View All Assignments</button>
+                </div>
               </div>
 
               <div className="card">

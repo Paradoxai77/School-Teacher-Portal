@@ -20,12 +20,12 @@
   /* Typography */
   --font-family: 'Outfit', system-ui, -apple-system, sans-serif;
   
-  /* Radii - very rounded like the image */
-  --radius-sm: 0.5rem;
-  --radius-md: 1rem;
-  --radius-lg: 1.5rem;
-  --radius-xl: 2rem;
-  --radius-full: 9999px; /* Pill shape for buttons */
+  /* Radii - Professional moderate styling */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-full: 9999px; /* Pill shape for chips */
   
   /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -64,11 +64,11 @@ body {
 
 /* Typography Utilities */
 h1, h2, h3, h4, h5, h6 {
-  font-weight: 500; /* Softer weight as seen in image */
+  font-weight: 600; /* Professional stronger weight for hierarchy */
   line-height: 1.2;
   margin-bottom: 0.5em;
   color: var(--text-primary);
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
 }
 
 p {
@@ -91,8 +91,8 @@ p {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  border-radius: var(--radius-full); /* Pill shape */
+  padding: 0.5rem 1.25rem; /* More compact */
+  border-radius: var(--radius-md); /* Moderate radius */
   font-weight: 500;
   font-family: var(--font-family);
   cursor: pointer;
@@ -139,7 +139,7 @@ p {
 .btn-secondary {
   background-color: transparent;
   color: var(--text-primary);
-  border-color: var(--border-color);
+  border: 1px solid var(--border-color); /* Explicitly show border for secondary */
 }
 
 .btn-secondary:hover {
@@ -149,7 +149,7 @@ p {
 /* Cards */
 .card {
   background-color: var(--surface-color);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-lg);
   padding: 1.5rem;
   box-shadow: var(--shadow-md);
   border: none; /* Image cards have no visible borders, just soft shadow */
@@ -176,8 +176,8 @@ p {
 }
 
 .input-field {
-  padding: 0.85rem 1.25rem;
-  border-radius: var(--radius-full); /* Pill shape inputs */
+  padding: 0.6rem 1rem;
+  border-radius: var(--radius-md); /* Moderate radius */
   border: 1px solid var(--border-color);
   background-color: var(--surface-color);
   color: var(--text-primary);

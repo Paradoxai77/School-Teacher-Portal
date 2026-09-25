@@ -48,9 +48,9 @@ export function Subjects() {
               </div>
             </div>
 
-            <div style={{ display: 'flex', gap: '0.75rem', marginTop: 'auto' }}>
-              <button className="btn btn-secondary" style={{ width: '100%', justifyContent: 'space-between' }}>
-                View Subject Workspace <ChevronRight size={20} />
+            <div style={{ display: 'flex', marginTop: 'auto', paddingTop: '1rem' }}>
+              <button className="btn btn-secondary text-sm" style={{ padding: '0.4rem 0.8rem' }} onClick={() => navigate(`/app/subjects/${s.id}`)}>
+                View Workspace <ChevronRight size={16} />
               </button>
             </div>
           </div>
