@@ -29,7 +29,6 @@ export function ClassDetails() {
   const [statusFilter, setStatusFilter] = useState('All');
 
   const [isAttendanceModalOpen, setIsAttendanceModalOpen] = useState(false);
-  const [attendance, setAttendance] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     if (!classId) return;
@@ -67,21 +66,27 @@ export function ClassDetails() {
     return true;
   });
 
+  const [attendance, setAttendance] = useState<Record<string, string>>({});
+  const [attendanceDate, setAttendanceDate] = useState(new Date().toISOString().split('T')[0]);
+  const [attendancePeriod, setAttendancePeriod] = useState('Morning');
+  const [attendanceStep, setAttendanceStep] = useState<'mark' | 'review'>('mark');
+
   const openAttendance = () => {
-    const initialAtt: Record<string, boolean> = {};
-    students.forEach(s => initialAtt[s.id] = true);
+    const initialAtt: Record<string, string> = {};
+    students.forEach(s => initialAtt[s.id] = 'Present');
     setAttendance(initialAtt);
+    setAttendanceStep('mark');
     setIsAttendanceModalOpen(true);
   };
 
-  const toggleAttendance = (studentId: string) => {
-    setAttendance(prev => ({ ...prev, [studentId]: !prev[studentId] }));
+  const handleStatusChange = (studentId: string, status: string) => {
+    setAttendance(prev => ({ ...prev, [studentId]: status }));
   };
 
   const handleSaveAttendance = async () => {
     if (!classInfo) return;
-    const records = students.map(s => ({ studentId: s.id, present: attendance[s.id] }));
-    await saveAttendance(classInfo.id, records);
+    const records = students.map(s => ({ studentId: s.id, status: attendance[s.id] }));
+    await saveAttendance(classInfo.id, records, attendancePeriod, attendanceDate);
     alert('Attendance saved successfully!');
     setIsAttendanceModalOpen(false);
   };
@@ -460,23 +465,97 @@ export function ClassDetails() {
         title={`Take Attendance: ${classInfo.name} - ${classInfo.section}`}
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <div style={{ maxHeight: '400px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            {students.map(s => (
-              <div key={s.id} style={{ padding: '0.5rem', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span>{s.name} ({s.rollNumber})</span>
-                <button 
-                  onClick={() => toggleAttendance(s.id)}
-                  className={`btn ${attendance[s.id] ? 'btn-success' : 'btn-secondary'}`}
-                  style={{ padding: '0.25rem 0.5rem', fontSize: '0.85rem', width: '80px' }}
-                >
-                  {attendance[s.id] ? 'Present' : 'Absent'}
+          {attendanceStep === 'mark' ? (
+            <>
+              <div style={{ display: 'flex', gap: '1rem' }}>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, fontSize: '0.9rem' }}>Date</label>
+                  <input type="date" className="input-field" style={{ width: '100%' }} value={attendanceDate} onChange={e => setAttendanceDate(e.target.value)} />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, fontSize: '0.9rem' }}>Period</label>
+                  <select className="input-field" style={{ width: '100%' }} value={attendancePeriod} onChange={e => setAttendancePeriod(e.target.value)}>
+                    <option value="Morning">Morning Roll Call</option>
+                    <option value="Period 1">Period 1</option>
+                    <option value="Period 2">Period 2</option>
+                    <option value="Afternoon">Afternoon Roll Call</option>
+                  </select>
+                </div>
+              </div>
+              <div style={{ maxHeight: '400px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.5rem', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)' }}>
+                {students.map(s => (
+                  <div key={s.id} style={{ padding: '0.75rem', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: attendance[s.id] === 'Absent' ? 'rgba(239, 68, 68, 0.05)' : 'transparent' }}>
+                    <span>{s.name} ({s.rollNumber})</span>
+                    <select 
+                      value={attendance[s.id] || 'Present'}
+                      onChange={(e) => handleStatusChange(s.id, e.target.value)}
+                      className={`input-field ${attendance[s.id] === 'Present' ? 'text-success' : attendance[s.id] === 'Absent' ? 'text-danger' : 'text-warning'}`}
+                      style={{ width: '120px', padding: '0.25rem 0.5rem' }}
+                    >
+                      <option value="Present">Present</option>
+                      <option value="Absent">Absent</option>
+                      <option value="Late">Late</option>
+                      <option value="Excused">Excused</option>
+                    </select>
+                  </div>
+                ))}
+              </div>
+              <button className="btn btn-primary" onClick={() => setAttendanceStep('review')} style={{ marginTop: '1rem', width: '100%' }}>
+                Review Attendance
+              </button>
+            </>
+          ) : (
+            <>
+              <div style={{ backgroundColor: 'var(--bg-color)', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
+                <h3 style={{ marginBottom: '1rem' }}>Review Summary</h3>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                  <span>Date:</span> <strong>{attendanceDate}</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                  <span>Period:</span> <strong>{attendancePeriod}</strong>
+                </div>
+                <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
+                  <div style={{ flex: 1, backgroundColor: 'rgba(16, 185, 129, 0.1)', padding: '0.5rem', borderRadius: 'var(--radius-sm)', textAlign: 'center', color: 'var(--success)' }}>
+                    <div style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{Object.values(attendance).filter(v => v === 'Present').length}</div>
+                    <div style={{ fontSize: '0.8rem' }}>Present</div>
+                  </div>
+                  <div style={{ flex: 1, backgroundColor: 'rgba(239, 68, 68, 0.1)', padding: '0.5rem', borderRadius: 'var(--radius-sm)', textAlign: 'center', color: 'var(--danger)' }}>
+                    <div style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{Object.values(attendance).filter(v => v === 'Absent').length}</div>
+                    <div style={{ fontSize: '0.8rem' }}>Absent</div>
+                  </div>
+                  <div style={{ flex: 1, backgroundColor: 'rgba(245, 158, 11, 0.1)', padding: '0.5rem', borderRadius: 'var(--radius-sm)', textAlign: 'center', color: 'var(--warning)' }}>
+                    <div style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{Object.values(attendance).filter(v => v === 'Late' || v === 'Excused').length}</div>
+                    <div style={{ fontSize: '0.8rem' }}>Late/Excused</div>
+                  </div>
+                </div>
+                
+                {Object.entries(attendance).filter(([_, status]) => status !== 'Present').length > 0 && (
+                  <div>
+                    <strong style={{ display: 'block', marginBottom: '0.5rem' }}>Exceptions:</strong>
+                    <ul style={{ listStyle: 'none', padding: 0, margin: 0, maxHeight: '150px', overflowY: 'auto' }}>
+                      {Object.entries(attendance).filter(([_, status]) => status !== 'Present').map(([id, status]) => {
+                        const student = students.find(s => s.id === id);
+                        return (
+                          <li key={id} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.25rem 0', borderBottom: '1px solid var(--border-color)' }}>
+                            <span>{student?.name}</span>
+                            <span className={status === 'Absent' ? 'text-danger' : 'text-warning'}>{status}</span>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                )}
+              </div>
+              <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+                <button className="btn btn-secondary" onClick={() => setAttendanceStep('mark')} style={{ flex: 1 }}>
+                  Back
+                </button>
+                <button className="btn btn-primary" onClick={handleSaveAttendance} style={{ flex: 1 }}>
+                  Submit Attendance
                 </button>
               </div>
-            ))}
-          </div>
-          <button className="btn btn-primary" onClick={handleSaveAttendance} style={{ marginTop: '1rem', width: '100%' }}>
-            Submit Attendance
-          </button>
+            </>
+          )}
         </div>
       </Modal>
     </div>

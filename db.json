@@ -7,8 +7,13 @@
       "password": "password123",
       "role": "Class Teacher",
       "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Amit",
-      "subjects": ["Mathematics"],
-      "classesTaught": ["10th A", "11th Science"]
+      "subjects": [
+        "Mathematics"
+      ],
+      "classesTaught": [
+        "10th A",
+        "11th Science"
+      ]
     },
     {
       "id": "T2",
@@ -17,8 +22,14 @@
       "password": "password123",
       "role": "Subject Teacher",
       "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Sneha",
-      "subjects": ["English Lit", "History"],
-      "classesTaught": ["10th B", "11th Commerce"]
+      "subjects": [
+        "English Lit",
+        "History"
+      ],
+      "classesTaught": [
+        "10th B",
+        "11th Commerce"
+      ]
     },
     {
       "id": "T3",
@@ -27,8 +38,14 @@
       "password": "password123",
       "role": "Subject Teacher",
       "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Neha",
-      "subjects": ["Chemistry", "Biology"],
-      "classesTaught": ["10th C", "11th Science"]
+      "subjects": [
+        "Chemistry",
+        "Biology"
+      ],
+      "classesTaught": [
+        "10th C",
+        "11th Science"
+      ]
     },
     {
       "id": "T4",
@@ -37,8 +54,14 @@
       "password": "password123",
       "role": "Subject Teacher",
       "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Rohan",
-      "subjects": ["Economics", "Accountancy"],
-      "classesTaught": ["10th A", "11th Commerce"]
+      "subjects": [
+        "Economics",
+        "Accountancy"
+      ],
+      "classesTaught": [
+        "10th A",
+        "11th Commerce"
+      ]
     },
     {
       "id": "T5",
@@ -47,8 +70,14 @@
       "password": "password123",
       "role": "Subject Teacher",
       "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Priya",
-      "subjects": ["Computer Science", "Mathematics"],
-      "classesTaught": ["10th B", "11th Commerce"]
+      "subjects": [
+        "Computer Science",
+        "Mathematics"
+      ],
+      "classesTaught": [
+        "10th B",
+        "11th Commerce"
+      ]
     }
   ],
   "classes": [
@@ -343,67 +372,67 @@
       "records": [
         {
           "studentId": "S15",
-          "present": true
+          "status": "Present"
         },
         {
           "studentId": "S16",
-          "present": false
+          "status": "Absent"
         },
         {
           "studentId": "S17",
-          "present": true
+          "status": "Present"
         },
         {
           "studentId": "S18",
-          "present": true
+          "status": "Present"
         },
         {
           "studentId": "S19",
-          "present": true
+          "status": "Present"
         },
         {
           "studentId": "S20",
-          "present": true
+          "status": "Present"
         },
         {
           "studentId": "S21",
-          "present": true
+          "status": "Present"
         },
         {
           "studentId": "S22",
-          "present": true
+          "status": "Present"
         },
         {
           "studentId": "S23",
-          "present": true
+          "status": "Present"
         },
         {
           "studentId": "S24",
-          "present": true
+          "status": "Present"
         },
         {
           "studentId": "S25",
-          "present": true
+          "status": "Present"
         },
         {
           "studentId": "S26",
-          "present": true
+          "status": "Present"
         },
         {
           "studentId": "S27",
-          "present": true
+          "status": "Present"
         },
         {
           "studentId": "S28",
-          "present": true
+          "status": "Present"
         },
         {
           "studentId": "S29",
-          "present": true
+          "status": "Present"
         },
         {
           "studentId": "S30",
-          "present": true
+          "status": "Present"
         }
       ],
       "id": "tvnpJoJmWcE"
@@ -420,59 +449,59 @@
       "records": [
         {
           "studentId": "S1",
-          "present": true
+          "status": "Present"
         },
         {
           "studentId": "S2",
-          "present": true
+          "status": "Present"
         },
         {
           "studentId": "S3",
-          "present": true
+          "status": "Present"
         },
         {
           "studentId": "S4",
-          "present": true
+          "status": "Present"
         },
         {
           "studentId": "S5",
-          "present": true
+          "status": "Present"
         },
         {
           "studentId": "S6",
-          "present": true
+          "status": "Present"
         },
         {
           "studentId": "S7",
-          "present": true
+          "status": "Present"
         },
         {
           "studentId": "S8",
-          "present": true
+          "status": "Present"
         },
         {
           "studentId": "S9",
-          "present": true
+          "status": "Present"
         },
         {
           "studentId": "S10",
-          "present": true
+          "status": "Present"
         },
         {
           "studentId": "S11",
-          "present": true
+          "status": "Present"
         },
         {
           "studentId": "S12",
-          "present": true
+          "status": "Present"
         },
         {
           "studentId": "S13",
-          "present": true
+          "status": "Present"
         },
         {
           "studentId": "S14",
-          "present": true
+          "status": "Present"
         }
       ],
       "id": "-_7UaXGdCwY"
@@ -556,5 +585,6 @@
       "id": "stQG7DKvQwk"
     }
   ],
-  "$schema": "./node_modules/json-server/schema.json"
+  "$schema": "./node_modules/json-server/schema.json",
+  "attendanceCorrections": []
 }

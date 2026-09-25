@@ -219,12 +219,12 @@ export const createExam = async (data: Omit<Exam, 'id'>): Promise<Exam> => {
   }
 };
 
-export const saveAttendance = async (classId: string, records: any[]): Promise<any> => {
+export const saveAttendance = async (classId: string, records: any[], period?: string, date?: string): Promise<any> => {
   try {
     const res = await fetch(`${API_URL}/attendance`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ classId, date: new Date().toISOString(), records, id: `ATT${Date.now()}` }),
+      body: JSON.stringify({ classId, date: date || new Date().toISOString(), period, records, id: `ATT${Date.now()}` }),
     });
     if (!res.ok) throw new Error('API failed');
     return await res.json();
@@ -306,6 +306,30 @@ export const getAttendanceHistory = async (): Promise<any[]> => {
   } catch (error) {
     console.warn('Falling back to local db.json for attendance history');
     return (db as any).attendance || [];
+  }
+};
+
+export const getAttendanceCorrections = async (): Promise<any[]> => {
+  try {
+    const res = await fetch(`${API_URL}/attendanceCorrections`);
+    if (!res.ok) throw new Error('API failed');
+    return await res.json();
+  } catch (error) {
+    return (db as any).attendanceCorrections || [];
+  }
+};
+
+export const saveAttendanceCorrection = async (correction: any): Promise<any> => {
+  try {
+    const res = await fetch(`${API_URL}/attendanceCorrections`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...correction, id: `CORR${Date.now()}` }),
+    });
+    if (!res.ok) throw new Error('API failed');
+    return await res.json();
+  } catch (error) {
+    return { success: true };
   }
 };
 
