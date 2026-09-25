@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getAssignment, getSubmissions, type Assignment, type Submission } from '../services/mockData';
 import { ArrowLeft, BookOpen, Calendar, Users, CheckCircle, Clock, FileText, AlertCircle, Paperclip } from 'lucide-react';
-import { Modal } from './Modal';
+
 
 type Tab = 'overview' | 'submissions' | 'feedback';
 

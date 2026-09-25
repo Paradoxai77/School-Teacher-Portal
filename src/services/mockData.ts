@@ -64,9 +64,22 @@ export interface Assignment {
 }
 
 export interface Mark {
+  id?: string;
   studentId: string;
   examId: string;
   score: number | null;
+}
+
+export interface MarksCorrection {
+  id: string;
+  examId: string;
+  studentId: string;
+  originalScore: number | null;
+  requestedScore: number | null;
+  reason: string;
+  requestedBy: string;
+  requestedAt: string;
+  status: 'Pending' | 'Approved' | 'Rejected';
 }
 
 export interface Submission {
@@ -236,17 +249,71 @@ export const saveAttendance = async (classId: string, records: any[], period?: s
   }
 };
 
-export const saveMarks = async (examId: string, marks: Mark[]): Promise<any> => {
+export const getMarks = async (examId: string): Promise<Mark[]> => {
   try {
-    const res = await fetch(`${API_URL}/marks`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ examId, marks, id: `MK${Date.now()}` }),
-    });
+    const res = await fetch(`${API_URL}/marks?examId=${examId}`);
     if (!res.ok) throw new Error('API failed');
     return await res.json();
   } catch (error) {
-    return { success: true };
+    console.warn('Falling back to local db.json for marks');
+    return ((db as any).marks || []).filter((m: Mark) => m.examId === examId);
+  }
+};
+
+export const saveMarks = async (examId: string, records: Mark[], status: 'Draft' | 'Submitted' = 'Draft'): Promise<void> => {
+  try {
+    await fetch(`${API_URL}/marks/batch`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ examId, records, status })
+    });
+  } catch (error) {
+    console.warn('Falling back to local db.json for saveMarks', { examId, records, status });
+    const existing = (db as any).marks || [];
+    records.forEach(r => {
+      const idx = existing.findIndex((m: Mark) => m.studentId === r.studentId && m.examId === examId);
+      if (idx >= 0) existing[idx] = { ...existing[idx], score: r.score };
+      else existing.push({ id: `M${Date.now()}${Math.random()}`, ...r });
+    });
+    (db as any).marks = existing;
+    
+    // Mock exam status update
+    const exams = (db as any).exams || [];
+    const examIdx = exams.findIndex((e: Exam) => e.id === examId);
+    if (examIdx >= 0) {
+      exams[examIdx].status = status;
+    }
+  }
+};
+
+export const getMarksCorrections = async (examId: string): Promise<MarksCorrection[]> => {
+  try {
+    const res = await fetch(`${API_URL}/marksCorrections?examId=${examId}`);
+    if (!res.ok) throw new Error('API failed');
+    return await res.json();
+  } catch (error) {
+    console.warn('Falling back to local db.json for marks corrections');
+    return ((db as any).marksCorrections || []).filter((c: MarksCorrection) => c.examId === examId);
+  }
+};
+
+export const saveMarksCorrection = async (correction: Omit<MarksCorrection, 'id' | 'requestedAt' | 'status'>): Promise<void> => {
+  try {
+    await fetch(`${API_URL}/marksCorrections`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(correction)
+    });
+  } catch (error) {
+    console.warn('Falling back to local db.json for saveMarksCorrection');
+    const corrections = (db as any).marksCorrections || [];
+    corrections.push({
+      ...correction,
+      id: `MC${Date.now()}`,
+      requestedAt: new Date().toISOString(),
+      status: 'Pending'
+    });
+    (db as any).marksCorrections = corrections;
   }
 };
 
