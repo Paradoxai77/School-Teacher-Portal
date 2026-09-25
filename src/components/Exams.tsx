@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getExams, createExam, type Exam } from '../services/mockData';
-import { ClipboardList, Calendar, ChevronRight, FileText } from 'lucide-react';
+import { ClipboardList, ChevronRight, FileText } from 'lucide-react';
 import { Modal } from './Modal';
 import { useNavigate } from 'react-router-dom';
 
@@ -69,35 +69,48 @@ export function Exams() {
         </button>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '1.5rem' }}>
-        {exams.map(exam => (
-          <div key={exam.id} className="card" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', cursor: 'pointer' }} onClick={() => navigate(`/app/exams/${exam.id}`)}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-              <div>
-                <h3 style={{ fontSize: '1.25rem', marginBottom: '0.25rem', fontWeight: 600 }}>{exam.title}</h3>
-                <div style={{ color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem' }}>
-                   <ClipboardList size={16} /> {exam.subject} (Class {exam.classId})
-                </div>
-              </div>
-              {getStatusBadge(exam.status)}
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Calendar size={16} /> {new Date(exam.date).toLocaleDateString()}
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Max Marks:</span> {exam.maxMarks}
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', marginTop: 'auto', paddingTop: '1rem' }}>
-              <button className="btn btn-secondary text-sm" style={{ padding: '0.4rem 0.8rem' }}>
-                View Exam Workspace <ChevronRight size={16} />
-              </button>
-            </div>
-          </div>
-        ))}
+      <div style={{ backgroundColor: 'var(--bg-color)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-color)', overflow: 'hidden' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+          <thead>
+            <tr style={{ backgroundColor: 'var(--secondary-color)', borderBottom: '1px solid var(--border-color)' }}>
+              <th style={{ padding: '1rem' }}>Title</th>
+              <th style={{ padding: '1rem' }}>Subject & Class</th>
+              <th style={{ padding: '1rem' }}>Date</th>
+              <th style={{ padding: '1rem' }}>Max Marks</th>
+              <th style={{ padding: '1rem' }}>Status</th>
+              <th style={{ padding: '1rem', textAlign: 'right' }}>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {exams.map(exam => (
+              <tr key={exam.id} style={{ borderBottom: '1px solid var(--border-color)', cursor: 'pointer' }} onClick={() => navigate(`/app/exams/${exam.id}`)}>
+                <td style={{ padding: '1rem', fontWeight: 600 }}>{exam.title}</td>
+                <td style={{ padding: '1rem', color: 'var(--text-secondary)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <ClipboardList size={14} /> {exam.subject} (Class {exam.classId})
+                  </div>
+                </td>
+                <td style={{ padding: '1rem' }}>
+                  {new Date(exam.date).toLocaleDateString()}
+                </td>
+                <td style={{ padding: '1rem' }}>{exam.maxMarks}</td>
+                <td style={{ padding: '1rem' }}>{getStatusBadge(exam.status)}</td>
+                <td style={{ padding: '1rem', textAlign: 'right' }}>
+                  <button className="btn btn-secondary text-sm" style={{ padding: '0.4rem 0.8rem' }} onClick={(e) => { e.stopPropagation(); navigate(`/app/exams/${exam.id}`); }}>
+                    Manage <ChevronRight size={16} />
+                  </button>
+                </td>
+              </tr>
+            ))}
+            {exams.length === 0 && (
+              <tr>
+                <td colSpan={6} style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                  No assessments found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
 
       <Modal isOpen={isNewModalOpen} onClose={() => setIsNewModalOpen(false)} title="Schedule New Assessment">
