@@ -44,25 +44,25 @@ export function Layout() {
         </div>
 
         <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
-          <NavLink onClick={() => setIsSidebarOpen(false)} to="/app" end className={({isActive}) => `btn btn-secondary ${isActive ? 'active-nav' : ''}`} style={{ border: 'none' }}>
+          <NavLink onClick={() => setIsSidebarOpen(false)} to="/app" end className={({isActive}) => `btn btn-secondary ${isActive ? 'nav-link-active' : ''}`} style={{ border: 'none' }}>
             <LayoutDashboard size={20} /> <span className="sidebar-text">Dashboard</span>
           </NavLink>
-          <NavLink onClick={() => setIsSidebarOpen(false)} to="/app/classes" className={({isActive}) => `btn btn-secondary ${isActive ? 'active-nav' : ''}`} style={{ border: 'none' }}>
+          <NavLink onClick={() => setIsSidebarOpen(false)} to="/app/classes" className={({isActive}) => `btn btn-secondary ${isActive ? 'nav-link-active' : ''}`} style={{ border: 'none' }}>
             <Users size={20} /> <span className="sidebar-text">My Classes</span>
           </NavLink>
-          <NavLink onClick={() => setIsSidebarOpen(false)} to="/app/subjects" className={({isActive}) => `btn btn-secondary ${isActive ? 'active-nav' : ''}`} style={{ border: 'none' }}>
+          <NavLink onClick={() => setIsSidebarOpen(false)} to="/app/subjects" className={({isActive}) => `btn btn-secondary ${isActive ? 'nav-link-active' : ''}`} style={{ border: 'none' }}>
             <BookOpen size={20} /> <span className="sidebar-text">My Subjects</span>
           </NavLink>
-          <NavLink onClick={() => setIsSidebarOpen(false)} to="/app/attendance" className={({isActive}) => `btn btn-secondary ${isActive ? 'active-nav' : ''}`} style={{ border: 'none' }}>
+          <NavLink onClick={() => setIsSidebarOpen(false)} to="/app/attendance" className={({isActive}) => `btn btn-secondary ${isActive ? 'nav-link-active' : ''}`} style={{ border: 'none' }}>
             <ClipboardList size={20} /> <span className="sidebar-text">Attendance</span>
           </NavLink>
-          <NavLink onClick={() => setIsSidebarOpen(false)} to="/app/assignments" className={({isActive}) => `btn btn-secondary ${isActive ? 'active-nav' : ''}`} style={{ border: 'none' }}>
+          <NavLink onClick={() => setIsSidebarOpen(false)} to="/app/assignments" className={({isActive}) => `btn btn-secondary ${isActive ? 'nav-link-active' : ''}`} style={{ border: 'none' }}>
             <BookOpen size={20} /> <span className="sidebar-text">Assignments</span>
           </NavLink>
-          <NavLink onClick={() => setIsSidebarOpen(false)} to="/app/exams" className={({isActive}) => `btn btn-secondary ${isActive ? 'active-nav' : ''}`} style={{ border: 'none' }}>
+          <NavLink onClick={() => setIsSidebarOpen(false)} to="/app/exams" className={({isActive}) => `btn btn-secondary ${isActive ? 'nav-link-active' : ''}`} style={{ border: 'none' }}>
             <ClipboardList size={20} /> <span className="sidebar-text">Exams & Marks</span>
           </NavLink>
-          <NavLink onClick={() => setIsSidebarOpen(false)} to="/app/reports" className={({isActive}) => `btn btn-secondary ${isActive ? 'active-nav' : ''}`} style={{ border: 'none' }}>
+          <NavLink onClick={() => setIsSidebarOpen(false)} to="/app/reports" className={({isActive}) => `btn btn-secondary ${isActive ? 'nav-link-active' : ''}`} style={{ border: 'none' }}>
             <LayoutDashboard size={20} /> <span className="sidebar-text">Reports</span>
           </NavLink>
         </nav>
@@ -72,16 +72,16 @@ export function Layout() {
             marginTop: 'auto',
             padding: '1rem',
             borderRadius: 'var(--radius-lg)',
-            backgroundColor: 'var(--bg-color)',
-            border: '1px solid var(--border-color)',
+            backgroundColor: 'rgba(255, 255, 255, 0.05)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
             display: 'flex',
             alignItems: 'center',
             gap: '1rem'
           }}>
-            <img src={currentTeacher.avatar} alt="Avatar" style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'var(--border-color)' }} />
+            <img src={currentTeacher.avatar} alt="Avatar" style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.1)' }} />
             <div className="sidebar-text" style={{ flex: 1, overflow: 'hidden' }}>
-              <div style={{ fontWeight: 600, fontSize: '0.875rem', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{currentTeacher.name}</div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{currentTeacher.role}</div>
+              <div style={{ fontWeight: 600, fontSize: '0.875rem', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', color: 'white' }}>{currentTeacher.name}</div>
+              <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)' }}>{currentTeacher.role}</div>
             </div>
           </div>
         )}
@@ -93,13 +93,13 @@ export function Layout() {
 
       {/* Main Content Area */}
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column', width: '100%', overflowX: 'hidden' }}>
-        <header className="glass" style={{
+        <header style={{
           height: '70px',
           padding: '0 2rem',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          borderBottom: '1px solid var(--border-color)'
+          background: 'transparent'
         }}>
           <button className="mobile-menu-btn btn-icon-circular" style={{ border: 'none' }} onClick={() => setIsSidebarOpen(true)}>
             <Menu size={24} />

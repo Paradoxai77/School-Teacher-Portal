@@ -1,18 +1,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
 
 :root {
-  /* Colors inspired by the image */
-  --primary-color: #0ba5b5; /* Teal */
-  --primary-hover: #098e9c;
-  --secondary-color: #000000;
+  /* Colors inspired by Dribbble theme */
+  --primary-color: #5c7cfa; /* Vibrant blue */
+  --primary-hover: #4c6ee6;
+  --sidebar-bg: #19204e; /* Dark blue sidebar */
+  --sidebar-text: #ffffff;
   
-  --bg-color: #f3f4f6;
-  --bg-gradient: linear-gradient(135deg, #e0f2fe 0%, #f3f4f6 50%, #dbeafe 100%);
-  --surface-color: rgba(255, 255, 255, 0.7); /* translucent white cards */
-  --surface-color-transparent: rgba(255, 255, 255, 0.4); /* For the right side glass */
-  --text-primary: #1f2937;
-  --text-secondary: #6b7280;
-  --border-color: #e5e7eb;
+  --bg-color: #f4f7ff; /* Very light blue background */
+  --bg-gradient: #f4f7ff; /* Solid background */
+  --surface-color: #ffffff; /* Solid white cards */
+  --text-primary: #19204e;
+  --text-secondary: #7a849c;
+  --border-color: #eaeef8;
   
   --success: #10b981;
   --warning: #f59e0b;
@@ -21,18 +21,18 @@
   /* Typography */
   --font-family: 'Outfit', system-ui, -apple-system, sans-serif;
   
-  /* Radii - Professional moderate styling */
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
-  --radius-xl: 12px;
-  --radius-full: 9999px; /* Pill shape for chips */
+  /* Radii - Friendly rounded styling */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
   
   /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
-  --shadow-glow: 0 0 20px rgba(11, 165, 181, 0.2);
+  --shadow-sm: 0 1px 2px 0 rgba(25, 32, 78, 0.05);
+  --shadow-md: 0 4px 12px -2px rgba(25, 32, 78, 0.05);
+  --shadow-lg: 0 10px 24px -4px rgba(25, 32, 78, 0.08);
+  --shadow-glow: 0 0 20px rgba(92, 124, 250, 0.3);
   
   /* Transitions */
   --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -47,8 +47,7 @@
 
 body {
   font-family: var(--font-family);
-  background: var(--bg-gradient);
-  background-attachment: fixed;
+  background: var(--bg-color);
   color: var(--text-primary);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -58,10 +57,8 @@ body {
 
 /* Glassmorphism Utilities */
 .glass {
-  background: var(--surface-color-transparent);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: var(--surface-color);
+  border-radius: var(--radius-xl);
 }
 
 /* Typography Utilities */
@@ -151,12 +148,10 @@ p {
 /* Cards */
 .card {
   background: var(--surface-color);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   border-radius: var(--radius-lg);
   padding: 1.5rem;
   box-shadow: var(--shadow-md);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  border: 1px solid var(--border-color);
   transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
@@ -243,12 +238,33 @@ p {
   display: flex;
   flex-direction: column;
   padding: 1.5rem;
-  border-right: 1px solid var(--border-color);
-  background: var(--surface-color-transparent);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: var(--sidebar-bg);
+  color: var(--sidebar-text);
+  border-top-right-radius: var(--radius-xl);
+  border-bottom-right-radius: var(--radius-xl);
   transition: transform 0.3s ease, width 0.3s ease;
   z-index: 1000;
+  box-shadow: 4px 0 24px rgba(25, 32, 78, 0.1);
+}
+
+.sidebar-container h2 {
+  color: var(--sidebar-text);
+}
+
+.sidebar-container .btn-secondary {
+  color: rgba(255, 255, 255, 0.7);
+  border: none;
+  background: transparent;
+}
+
+.sidebar-container .btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.sidebar-container .nav-link-active {
+  background-color: var(--primary-color) !important;
+  color: white !important;
 }
 
 .mobile-menu-btn {
