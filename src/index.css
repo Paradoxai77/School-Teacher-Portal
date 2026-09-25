@@ -6,9 +6,10 @@
   --primary-hover: #098e9c;
   --secondary-color: #000000;
   
-  --bg-color: #f2f2f2; /* Light gray body background */
-  --surface-color: #ffffff; /* White cards */
-  --surface-color-transparent: rgba(255, 255, 255, 0.2); /* For the right side glass */
+  --bg-color: #f3f4f6;
+  --bg-gradient: linear-gradient(135deg, #e0f2fe 0%, #f3f4f6 50%, #dbeafe 100%);
+  --surface-color: rgba(255, 255, 255, 0.7); /* translucent white cards */
+  --surface-color-transparent: rgba(255, 255, 255, 0.4); /* For the right side glass */
   --text-primary: #1f2937;
   --text-secondary: #6b7280;
   --border-color: #e5e7eb;
@@ -46,7 +47,8 @@
 
 body {
   font-family: var(--font-family);
-  background-color: var(--bg-color);
+  background: var(--bg-gradient);
+  background-attachment: fixed;
   color: var(--text-primary);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -148,11 +150,13 @@ p {
 
 /* Cards */
 .card {
-  background-color: var(--surface-color);
+  background: var(--surface-color);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-radius: var(--radius-lg);
   padding: 1.5rem;
   box-shadow: var(--shadow-md);
-  border: none; /* Image cards have no visible borders, just soft shadow */
+  border: 1px solid rgba(255, 255, 255, 0.5);
   transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 

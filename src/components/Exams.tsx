@@ -3,11 +3,17 @@ import { getExams, createExam, type Exam } from '../services/mockData';
 import { ClipboardList, ChevronRight, FileText } from 'lucide-react';
 import { Modal } from './Modal';
 import { useNavigate } from 'react-router-dom';
+import { LoadingState } from './ui/LoadingState';
+import { ErrorState } from './ui/ErrorState';
+import { EmptyState } from './ui/EmptyState';
+import { useNotification } from '../contexts/NotificationContext';
 
 export function Exams() {
   const [exams, setExams] = useState<Exam[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const navigate = useNavigate();
+  const { showNotification } = useNotification();
   
   const [isNewModalOpen, setIsNewModalOpen] = useState(false);
 
@@ -19,10 +25,15 @@ export function Exams() {
   const [maxMarks, setMaxMarks] = useState('100');
 
   const loadData = () => {
-    getExams().then(data => {
-      setExams(data);
-      setLoading(false);
-    });
+    getExams()
+      .then(data => {
+        setExams(data);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError(true);
+        setLoading(false);
+      });
   };
 
   useEffect(() => {
@@ -39,7 +50,7 @@ export function Exams() {
       maxMarks: Number(maxMarks),
       status: 'Draft'
     });
-    alert('Assessment created successfully!');
+    showNotification('Assessment created successfully!', 'success');
     setIsNewModalOpen(false);
     setTitle('');
     setSubject('');
@@ -55,7 +66,8 @@ export function Exams() {
     }
   };
 
-  if (loading) return <div>Loading exams...</div>;
+  if (loading) return <LoadingState message="Loading assessments..." />;
+  if (error) return <ErrorState message="Could not load assessments." action={<button className="btn btn-primary" onClick={() => window.location.reload()}>Try Again</button>} />;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
@@ -102,10 +114,15 @@ export function Exams() {
                 </td>
               </tr>
             ))}
-            {exams.length === 0 && (
+            {exams.length === 0 && !loading && !error && (
               <tr>
-                <td colSpan={6} style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
-                  No assessments found.
+                <td colSpan={6} style={{ padding: '2rem' }}>
+                  <EmptyState 
+                    icon={<ClipboardList size={48} />}
+                    title="No Assessments Found"
+                    description="You have not created any assessments yet."
+                    action={<button className="btn btn-primary" onClick={() => setIsNewModalOpen(true)}>Create First Assessment</button>}
+                  />
                 </td>
               </tr>
             )}

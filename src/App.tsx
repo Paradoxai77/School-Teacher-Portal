@@ -14,13 +14,15 @@ import { Assignments } from './components/Assignments';
 import { AssignmentDetails } from './components/AssignmentDetails';
 import { ReportsWorkspace } from './components/ReportsWorkspace';
 import { AuthProvider } from './contexts/AuthContext';
+import { NotificationProvider } from './contexts/NotificationContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { PublicDirectory } from './components/PublicDirectory';
 
 function App() {
   return (
-    <AuthProvider>
-      <HashRouter>
+    <NotificationProvider>
+      <AuthProvider>
+        <HashRouter>
         <Routes>
           <Route path="/" element={<PublicDirectory />} />
           <Route path="/login" element={<Login />} />
@@ -48,7 +50,8 @@ function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </HashRouter>
-    </AuthProvider>
+      </AuthProvider>
+    </NotificationProvider>
   );
 }
 

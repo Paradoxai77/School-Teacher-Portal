@@ -3,25 +3,35 @@ import { getClasses, type ClassInfo } from '../services/mockData';
 import { Users, ChevronRight, UserCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { LoadingState } from './ui/LoadingState';
+import { ErrorState } from './ui/ErrorState';
+import { EmptyState } from './ui/EmptyState';
 
 export function Classes() {
   const { currentTeacher } = useAuth();
   const [classes, setClasses] = useState<ClassInfo[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    getClasses().then(data => {
-      if (currentTeacher?.classesTaught) {
-        setClasses(data.filter(c => currentTeacher.classesTaught?.includes(c.id)));
-      } else {
-        setClasses(data);
-      }
-      setLoading(false);
-    });
+    getClasses()
+      .then(data => {
+        if (currentTeacher?.classesTaught) {
+          setClasses(data.filter(c => currentTeacher.classesTaught?.includes(c.id)));
+        } else {
+          setClasses(data);
+        }
+        setLoading(false);
+      })
+      .catch(() => {
+        setError(true);
+        setLoading(false);
+      });
   }, [currentTeacher]);
 
-  if (loading) return <div>Loading classes...</div>;
+  if (loading) return <LoadingState message="Loading classes..." />;
+  if (error) return <ErrorState message="Could not load your classes." action={<button className="btn btn-primary" onClick={() => window.location.reload()}>Try Again</button>} />;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
@@ -57,6 +67,14 @@ export function Classes() {
           </div>
         ))}
       </div>
+      
+      {!loading && classes.length === 0 && !error && (
+        <EmptyState 
+          icon={<Users size={48} />}
+          title="No Classes Assigned" 
+          description="You are not currently assigned as a teacher for any classes." 
+        />
+      )}
     </div>
   );
 }

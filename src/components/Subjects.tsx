@@ -3,22 +3,32 @@ import { getTeacherSubjects, type Subject } from '../services/mockData';
 import { useAuth } from '../contexts/AuthContext';
 import { BookOpen, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { LoadingState } from './ui/LoadingState';
+import { ErrorState } from './ui/ErrorState';
+import { EmptyState } from './ui/EmptyState';
 
 export function Subjects() {
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const { currentTeacher } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!currentTeacher) return;
-    getTeacherSubjects(currentTeacher.id).then(data => {
-      setSubjects(data);
-      setLoading(false);
-    });
+    getTeacherSubjects(currentTeacher.id)
+      .then(data => {
+        setSubjects(data);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError(true);
+        setLoading(false);
+      });
   }, [currentTeacher]);
 
-  if (loading) return <div>Loading subjects...</div>;
+  if (loading) return <LoadingState message="Loading subjects..." />;
+  if (error) return <ErrorState message="Could not load subjects." action={<button className="btn btn-primary" onClick={() => window.location.reload()}>Try Again</button>} />;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
@@ -56,6 +66,14 @@ export function Subjects() {
           </div>
         ))}
       </div>
+
+      {!loading && subjects.length === 0 && !error && (
+        <EmptyState 
+          icon={<BookOpen size={48} />}
+          title="No Subjects Assigned" 
+          description="You are not currently assigned to teach any subjects." 
+        />
+      )}
     </div>
   );
 }

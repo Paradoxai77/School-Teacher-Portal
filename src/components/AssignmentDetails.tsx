@@ -2,6 +2,10 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getAssignment, getSubmissions, type Assignment, type Submission } from '../services/mockData';
 import { ArrowLeft, BookOpen, Calendar, Users, CheckCircle, Clock, FileText, AlertCircle, Paperclip } from 'lucide-react';
+import { LoadingState } from './ui/LoadingState';
+import { ErrorState } from './ui/ErrorState';
+import { useNotification } from '../contexts/NotificationContext';
+import { useAuth } from '../contexts/AuthContext';
 
 
 type Tab = 'overview' | 'submissions' | 'feedback';
@@ -9,9 +13,12 @@ type Tab = 'overview' | 'submissions' | 'feedback';
 export function AssignmentDetails() {
   const { assignmentId } = useParams();
   const navigate = useNavigate();
+  const { currentTeacher } = useAuth();
   const [assignment, setAssignment] = useState<Assignment | null>(null);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const { showNotification } = useNotification();
 
   const [activeTab, setActiveTab] = useState<Tab>('overview');
 
@@ -28,6 +35,9 @@ export function AssignmentDetails() {
       setAssignment(asmt);
       setSubmissions(subs);
       setLoading(false);
+    }).catch(() => {
+      setError(true);
+      setLoading(false);
     });
   }, [assignmentId]);
 
@@ -41,7 +51,7 @@ export function AssignmentDetails() {
         : s
     );
     setSubmissions(updatedSubmissions);
-    alert('Feedback and score saved successfully!');
+    showNotification('Feedback and score saved successfully!', 'success');
     setSelectedSubmission(null);
   };
 
@@ -51,8 +61,10 @@ export function AssignmentDetails() {
     setScore(submission.score ?? '');
   };
 
-  if (loading) return <div>Loading assignment details...</div>;
-  if (!assignment) return <div>Assignment not found</div>;
+  if (loading) return <LoadingState message="Loading assignment details..." />;
+  if (error || !assignment) return <ErrorState message="Could not load assignment details." action={<button className="btn btn-secondary" onClick={() => navigate('/app/assignments')}>Go Back</button>} />;
+
+  const isAuthorized = currentTeacher?.subjects.includes(assignment.subject);
 
   const totalStudents = assignment.totalStudents || 32;
   const submittedCount = submissions.filter(s => s.status === 'Submitted').length;
@@ -115,9 +127,11 @@ export function AssignmentDetails() {
         <button className={`btn ${activeTab === 'submissions' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setActiveTab('submissions')} style={{ border: activeTab === 'submissions' ? undefined : 'none' }}>
           <Users size={18} /> Submissions
         </button>
-        <button className={`btn ${activeTab === 'feedback' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setActiveTab('feedback')} style={{ border: activeTab === 'feedback' ? undefined : 'none' }}>
-          <CheckCircle size={18} /> Feedback & Grades
-        </button>
+        {isAuthorized && (
+          <button className={`btn ${activeTab === 'feedback' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setActiveTab('feedback')} style={{ border: activeTab === 'feedback' ? undefined : 'none' }}>
+            <CheckCircle size={18} /> Feedback & Grades
+          </button>
+        )}
       </div>
 
       {/* Tab Content */}
@@ -173,9 +187,11 @@ export function AssignmentDetails() {
                       {s.status === 'Reviewed' && <span className="badge" style={{ background: 'rgba(59, 130, 246, 0.1)', color: 'var(--primary-color)' }}><CheckCircle size={14} /> Reviewed ({s.score})</span>}
                     </td>
                     <td style={{ padding: '1rem', textAlign: 'right' }}>
-                      <button className="btn btn-secondary" onClick={() => { setActiveTab('feedback'); openGradingModal(s); }}>
-                        {s.status === 'Reviewed' ? 'Edit Feedback' : 'Review & Grade'}
-                      </button>
+                      {isAuthorized && (
+                        <button className="btn btn-secondary" onClick={() => { setActiveTab('feedback'); openGradingModal(s); }}>
+                          {s.status === 'Reviewed' ? 'Edit Feedback' : 'Review & Grade'}
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -184,7 +200,7 @@ export function AssignmentDetails() {
           </div>
         )}
 
-        {activeTab === 'feedback' && (
+        {activeTab === 'feedback' && isAuthorized && (
           <div style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: '1.5rem', alignItems: 'start' }}>
             <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
               <div style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', backgroundColor: 'var(--secondary-color)', fontWeight: 600 }}>

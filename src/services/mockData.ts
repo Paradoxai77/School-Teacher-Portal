@@ -245,6 +245,14 @@ export const saveAttendance = async (classId: string, records: any[], period?: s
     if (!res.ok) throw new Error('API failed');
     return await res.json();
   } catch (error) {
+    const d = date || new Date().toISOString().split('T')[0];
+    const p = period || 'Morning';
+    const existing = (db as any).attendance || [];
+    const isDuplicate = existing.some((a: any) => a.classId === classId && a.date.startsWith(d) && a.period === p);
+    if (isDuplicate) throw new Error('Attendance already submitted for this period and date.');
+    
+    existing.push({ id: `ATT${Date.now()}`, classId, date: d, period: p, records, status: 'Submitted' });
+    (db as any).attendance = existing;
     return { success: true };
   }
 };

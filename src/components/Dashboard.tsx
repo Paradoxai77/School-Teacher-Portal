@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getClasses, type ClassInfo } from '../services/mockData';
+import { LoadingState } from './ui/LoadingState';
+import { ErrorState } from './ui/ErrorState';
 import { 
   Users, AlertCircle, Clock, Tag, Calendar as CalendarIcon, 
   CheckCircle, FileText, AlertTriangle, ArrowRight 
@@ -12,15 +14,22 @@ export function Dashboard() {
   const [loading, setLoading] = useState(true);
   const { currentTeacher } = useAuth();
   const navigate = useNavigate();
+  const [error, setError] = useState(false);
 
   useEffect(() => {
-    getClasses().then(data => {
-      setClasses(data);
-      setLoading(false);
-    });
+    getClasses()
+      .then(data => {
+        setClasses(data);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError(true);
+        setLoading(false);
+      });
   }, []);
 
-  if (loading) return <div>Loading dashboard...</div>;
+  if (loading) return <LoadingState message="Loading dashboard..." />;
+  if (error) return <ErrorState message="Could not load dashboard data." action={<button className="btn btn-primary" onClick={() => window.location.reload()}>Try Again</button>} />;
 
   const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
 

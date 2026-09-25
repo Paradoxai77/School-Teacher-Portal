@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getTeacherSubjects, type Subject } from '../services/mockData';
+import { getTeacherSubjects, getClasses, type Subject, type ClassInfo } from '../services/mockData';
 import { useAuth } from '../contexts/AuthContext';
 import { ArrowLeft, BookOpen, Users, Activity, FilePlus, ChevronRight, BarChart } from 'lucide-react';
+import { LoadingState } from './ui/LoadingState';
+import { ErrorState } from './ui/ErrorState';
 
 type Tab = 'overview' | 'classes' | 'assignments' | 'assessments' | 'performance';
 
@@ -12,20 +14,30 @@ export function SubjectDetails() {
   const { currentTeacher } = useAuth();
   
   const [subject, setSubject] = useState<Subject | null>(null);
+  const [allClasses, setAllClasses] = useState<ClassInfo[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [activeTab, setActiveTab] = useState<Tab>('overview');
 
   useEffect(() => {
     if (!currentTeacher || !subjectId) return;
-    getTeacherSubjects(currentTeacher.id).then(data => {
-      const found = data.find(s => s.id === subjectId);
-      setSubject(found || null);
-      setLoading(false);
-    });
+    Promise.all([
+      getTeacherSubjects(currentTeacher.id),
+      getClasses()
+    ]).then(([data, cls]) => {
+        const found = data.find(s => s.id === subjectId);
+        setSubject(found || null);
+        setAllClasses(cls);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError(true);
+        setLoading(false);
+      });
   }, [subjectId, currentTeacher]);
 
-  if (loading) return <div>Loading subject details...</div>;
-  if (!subject) return <div>Subject not found</div>;
+  if (loading) return <LoadingState message="Loading subject details..." />;
+  if (error || !subject) return <ErrorState message="Could not load subject details." action={<button className="btn btn-secondary" onClick={() => navigate('/app/subjects')}>Go Back</button>} />;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
@@ -117,7 +129,9 @@ export function SubjectDetails() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             <h2 style={{ fontSize: '1.5rem' }}>Classes Taught</h2>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
-              {subject.classes.map(className => (
+              {subject.classes.map(className => {
+                const cls = allClasses.find(c => c.name === className);
+                return (
                 <div key={className} className="card" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <h3 style={{ fontSize: '1.25rem' }}>{className}</h3>
@@ -127,12 +141,13 @@ export function SubjectDetails() {
                     <Users size={18} /> ~32 Students
                   </div>
                   <div style={{ marginTop: 'auto', paddingTop: '1rem' }}>
-                    <button className="btn btn-secondary text-sm" style={{ padding: '0.4rem 0.8rem' }} onClick={() => navigate(`/app/classes/1`)}>
+                    <button className="btn btn-secondary text-sm" style={{ padding: '0.4rem 0.8rem' }} onClick={() => navigate(cls ? `/app/classes/${cls.id}` : '/app/classes')}>
                       Go to Class Workspace <ChevronRight size={16} />
                     </button>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}

@@ -5,9 +5,12 @@ import { useAuth } from '../contexts/AuthContext';
 import { 
   Users, ArrowLeft, Calendar, LayoutDashboard, ClipboardList, BookOpen, 
   FileText, CheckCircle, TrendingUp, MessageSquare, Plus, Edit3, UserCheck, UserX, Activity,
-  Search, ArrowUpRight, ArrowRight, ArrowDownRight
+  Search, ArrowUpRight, ArrowRight, ArrowDownRight 
 } from 'lucide-react';
 import { Modal } from './Modal';
+import { LoadingState } from './ui/LoadingState';
+import { ErrorState } from './ui/ErrorState';
+import { useNotification } from '../contexts/NotificationContext';
 
 type Tab = 'overview' | 'students' | 'attendance' | 'subjects' | 'assignments' | 'exams' | 'performance' | 'remarks';
 
@@ -19,6 +22,8 @@ export function ClassDetails() {
   const [students, setStudents] = useState<Student[]>([]);
   const [subjects, setSubjects] = useState<ClassSubject[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const { showNotification } = useNotification();
   
   const [activeTab, setActiveTab] = useState<Tab>('overview');
   
@@ -47,6 +52,9 @@ export function ClassDetails() {
         setSubjects(subjs);
       }
       
+      setLoading(false);
+    }).catch(() => {
+      setError(true);
       setLoading(false);
     });
   }, [classId, currentTeacher]);
@@ -85,15 +93,27 @@ export function ClassDetails() {
 
   const handleSaveAttendance = async () => {
     if (!classInfo) return;
-    const records = students.map(s => ({ studentId: s.id, status: attendance[s.id] }));
-    await saveAttendance(classInfo.id, records, attendancePeriod, attendanceDate);
-    alert('Attendance saved successfully!');
-    setIsAttendanceModalOpen(false);
-    navigate('/app/attendance');
+    try {
+      const records = students.map(s => ({ studentId: s.id, status: attendance[s.id] }));
+      await saveAttendance(classInfo.id, records, attendancePeriod, attendanceDate);
+      showNotification('Attendance saved successfully!', 'success');
+      setIsAttendanceModalOpen(false);
+      navigate('/app/attendance');
+    } catch (err: any) {
+      showNotification(err.message || 'Failed to save attendance.', 'error');
+    }
   };
 
-  if (loading) return <div>Loading class details...</div>;
-  if (!classInfo) return <div>Class not found</div>;
+  if (loading) return <LoadingState message="Loading class workspace..." />;
+  if (error || !classInfo) return <ErrorState message="Could not load class details." action={<button className="btn btn-secondary" onClick={() => navigate('/app/classes')}>Go Back</button>} />;
+
+  const isClassTeacher = currentTeacher?.classesTaught?.includes(classInfo.name);
+  const isSubjectTeacher = subjects.some(s => currentTeacher?.subjects.includes(s.subjectName));
+  const isAuthorized = isClassTeacher || isSubjectTeacher;
+  
+  if (!isAuthorized) {
+    return <ErrorState message="You are not authorized to view this class workspace." action={<button className="btn btn-secondary" onClick={() => navigate('/app/classes')}>Go Back</button>} />;
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>

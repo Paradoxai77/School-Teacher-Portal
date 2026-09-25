@@ -8,6 +8,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { 
   User, ArrowLeft, Book, Clock, TrendingUp, MessageSquare, Plus, Edit3 
 } from 'lucide-react';
+import { LoadingState } from './ui/LoadingState';
+import { ErrorState } from './ui/ErrorState';
 
 type Tab = 'overview' | 'attendance' | 'academics' | 'assignments' | 'exams' | 'remarks';
 
@@ -25,6 +27,7 @@ export function StudentProfile() {
   const [remarks, setRemarks] = useState<StudentRemark[]>([]);
   
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [activeTab, setActiveTab] = useState<Tab>('overview');
 
   useEffect(() => {
@@ -44,13 +47,22 @@ export function StudentProfile() {
       setExams(exs);
       setRemarks(rems);
       setLoading(false);
+    }).catch(() => {
+      setError(true);
+      setLoading(false);
     });
   }, [studentId, classId]);
 
-  if (loading) return <div>Loading student profile...</div>;
-  if (!student) return <div>Student not found</div>;
+  if (loading) return <LoadingState message="Loading student profile..." />;
+  if (error || !student || !classInfo) return <ErrorState message="Could not load student profile." action={<button className="btn btn-secondary" onClick={() => navigate(-1)}>Go Back</button>} />;
 
-  const isClassTeacher = currentTeacher?.role === 'Class Teacher' && classInfo?.id && currentTeacher.classesTaught?.includes(classInfo.id);
+  const isClassTeacher = currentTeacher?.classesTaught?.includes(classInfo.name) || false;
+  const isSubjectTeacher = subjects.some(s => currentTeacher?.subjects.includes(s.subjectName));
+  const isAuthorized = isClassTeacher || isSubjectTeacher;
+
+  if (!isAuthorized) {
+    return <ErrorState message="You are not authorized to view this student's profile." action={<button className="btn btn-secondary" onClick={() => navigate(-1)}>Go Back</button>} />;
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>

@@ -3,11 +3,17 @@ import { getAssignments, createAssignment, type Assignment } from '../services/m
 import { BookOpen, Calendar, ChevronRight, FilePlus, Users } from 'lucide-react';
 import { Modal } from './Modal';
 import { useNavigate } from 'react-router-dom';
+import { LoadingState } from './ui/LoadingState';
+import { ErrorState } from './ui/ErrorState';
+import { EmptyState } from './ui/EmptyState';
+import { useNotification } from '../contexts/NotificationContext';
 
 export function Assignments() {
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const navigate = useNavigate();
+  const { showNotification } = useNotification();
   
   const [isNewModalOpen, setIsNewModalOpen] = useState(false);
 
@@ -21,10 +27,15 @@ export function Assignments() {
   const [attachments, setAttachments] = useState<string[]>([]);
 
   const loadData = () => {
-    getAssignments().then(data => {
-      setAssignments(data);
-      setLoading(false);
-    });
+    getAssignments()
+      .then(data => {
+        setAssignments(data);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError(true);
+        setLoading(false);
+      });
   };
 
   useEffect(() => {
@@ -45,7 +56,7 @@ export function Assignments() {
       totalStudents: 32, // Mock count
       status: 'Active'
     });
-    alert('Assignment created successfully!');
+    showNotification('Assignment created successfully!', 'success');
     setIsNewModalOpen(false);
     setTitle('');
     setSubject('');
@@ -63,7 +74,8 @@ export function Assignments() {
     return <span className="badge" style={{ background: 'var(--border-color)', color: 'var(--text-secondary)' }}>Closed</span>;
   };
 
-  if (loading) return <div>Loading assignments...</div>;
+  if (loading) return <LoadingState message="Loading assignments..." />;
+  if (error) return <ErrorState message="Could not load assignments." action={<button className="btn btn-primary" onClick={() => window.location.reload()}>Try Again</button>} />;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
@@ -122,6 +134,19 @@ export function Assignments() {
           </div>
         ))}
       </div>
+
+      {!loading && assignments.length === 0 && !error && (
+        <EmptyState 
+          icon={<BookOpen size={48} />}
+          title="No Assignments Found" 
+          description="You have not created any assignments yet." 
+          action={
+            <button className="btn btn-primary" onClick={() => setIsNewModalOpen(true)}>
+              <FilePlus size={18} /> Create First Assignment
+            </button>
+          }
+        />
+      )}
 
       <Modal isOpen={isNewModalOpen} onClose={() => setIsNewModalOpen(false)} title="Create New Assignment">
         <form onSubmit={handleCreateAssignment} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>

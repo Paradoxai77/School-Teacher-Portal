@@ -4,6 +4,9 @@ import { getExam, getStudents, getMarks, saveMarks, saveMarksCorrection, type Ex
 import { ArrowLeft, ClipboardList, Calendar, Users, CheckCircle, AlertCircle, RefreshCw } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { Modal } from './Modal';
+import { LoadingState } from './ui/LoadingState';
+import { ErrorState } from './ui/ErrorState';
+import { useNotification } from '../contexts/NotificationContext';
 
 export function ExamDetails() {
   const { examId } = useParams();
@@ -14,6 +17,8 @@ export function ExamDetails() {
   const [students, setStudents] = useState<Student[]>([]);
   const [marks, setMarks] = useState<Record<string, number | ''>>({});
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const { showNotification } = useNotification();
 
   // Correction Workflow State
   const [isCorrectionModalOpen, setIsCorrectionModalOpen] = useState(false);
@@ -43,6 +48,9 @@ export function ExamDetails() {
         setMarks(marksMap);
         setLoading(false);
       });
+    }).catch(() => {
+      setError(true);
+      setLoading(false);
     });
   };
 
@@ -55,7 +63,7 @@ export function ExamDetails() {
     for (const s of students) {
       const m = marks[s.id];
       if (m !== '' && (m < 0 || m > exam.maxMarks)) {
-        alert(`Invalid mark for ${s.name}. Must be between 0 and ${exam.maxMarks}.`);
+        showNotification(`Invalid mark for ${s.name}. Must be between 0 and ${exam.maxMarks}.`, 'error');
         return false;
       }
     }
@@ -71,7 +79,7 @@ export function ExamDetails() {
       score: marks[s.id] === '' ? null : Number(marks[s.id])
     }));
     await saveMarks(exam.id, records, 'Draft');
-    alert('Draft saved successfully!');
+    showNotification('Draft saved successfully!', 'success');
     loadData();
   };
 
@@ -85,7 +93,7 @@ export function ExamDetails() {
       score: marks[s.id] === '' ? null : Number(marks[s.id])
     }));
     await saveMarks(exam.id, records, 'Submitted');
-    alert('Marks submitted successfully!');
+    showNotification('Marks submitted successfully!', 'success');
     loadData();
   };
 
@@ -93,7 +101,7 @@ export function ExamDetails() {
     e.preventDefault();
     if (!exam || !correctionStudent || correctionScore === '') return;
     if (correctionScore < 0 || correctionScore > exam.maxMarks) {
-      alert(`Invalid score. Must be between 0 and ${exam.maxMarks}.`);
+      showNotification(`Invalid score. Must be between 0 and ${exam.maxMarks}.`, 'error');
       return;
     }
     
@@ -106,7 +114,7 @@ export function ExamDetails() {
       requestedBy: currentTeacher?.name || 'Unknown'
     });
     
-    alert('Correction request submitted and pending approval!');
+    showNotification('Correction request submitted and pending approval!', 'success');
     setIsCorrectionModalOpen(false);
     setCorrectionStudent(null);
     setCorrectionScore('');
@@ -120,12 +128,12 @@ export function ExamDetails() {
     setIsCorrectionModalOpen(true);
   };
 
-  if (loading) return <div>Loading exam details...</div>;
-  if (!exam) return <div>Exam not found</div>;
+  if (loading) return <LoadingState message="Loading exam details..." />;
+  if (error || !exam) return <ErrorState message="Could not load exam details." action={<button className="btn btn-secondary" onClick={() => navigate('/app/exams')}>Go Back</button>} />;
 
   const isEditable = exam.status === 'Draft';
-  // Check authorization
-  const isAuthorized = currentTeacher?.subjects.includes(exam.subject) || currentTeacher?.classesTaught?.includes(exam.classId);
+  // Check authorization: Must be the specific subject teacher to enter marks
+  const isAuthorized = currentTeacher?.subjects.includes(exam.subject);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>

@@ -2,6 +2,10 @@ import { useState, useEffect } from 'react';
 import { getClasses, getAttendanceHistory, getAttendanceCorrections, saveAttendanceCorrection, type ClassInfo } from '../services/mockData';
 import { Calendar, Clock, Edit3, AlertCircle, BarChart2 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { LoadingState } from './ui/LoadingState';
+import { ErrorState } from './ui/ErrorState';
+import { EmptyState } from './ui/EmptyState';
+import { useNotification } from '../contexts/NotificationContext';
 
 export function AttendanceWorkspace() {
   const location = useLocation();
@@ -12,7 +16,9 @@ export function AttendanceWorkspace() {
   const [history, setHistory] = useState<any[]>([]);
   const [corrections, setCorrections] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const navigate = useNavigate();
+  const { showNotification } = useNotification();
 
   // History filters
   const [historyDate, setHistoryDate] = useState('');
@@ -38,11 +44,17 @@ export function AttendanceWorkspace() {
       setHistory(hist);
       setCorrections(corrs);
       setLoading(false);
+    }).catch(() => {
+      setError(true);
+      setLoading(false);
     });
   }, []);
 
   const handleCorrectionSubmit = async () => {
-    if (!corrClass || !corrDate || !corrStudent || !corrReason) return alert('Fill all fields');
+    if (!corrClass || !corrDate || !corrStudent || !corrReason) {
+      showNotification('Please fill in all fields', 'error');
+      return;
+    }
     await saveAttendanceCorrection({
       classId: corrClass,
       date: corrDate,
@@ -54,7 +66,7 @@ export function AttendanceWorkspace() {
       requestedTime: new Date().toISOString(),
       approvalStatus: 'Pending'
     });
-    alert('Correction requested successfully');
+    showNotification('Correction requested successfully', 'success');
     const newCorrs = await getAttendanceCorrections();
     setCorrections(newCorrs);
     setActiveTab('correctionHistory');
@@ -119,7 +131,8 @@ export function AttendanceWorkspace() {
     });
   };
 
-  if (loading) return <div>Loading attendance data...</div>;
+  if (loading) return <LoadingState message="Loading attendance workspace..." />;
+  if (error) return <ErrorState message="Could not load attendance data." action={<button className="btn btn-primary" onClick={() => window.location.reload()}>Try Again</button>} />;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
@@ -197,7 +210,15 @@ export function AttendanceWorkspace() {
             </div>
           </div>
           <div>
-            {renderHistoryRecords()}
+            {filteredHistory.length === 0 ? (
+              <EmptyState 
+                icon={<Calendar size={48} />}
+                title="No Records Found"
+                description="There are no attendance records matching your current filters."
+              />
+            ) : (
+              renderHistoryRecords()
+            )}
           </div>
         </div>
       )}
