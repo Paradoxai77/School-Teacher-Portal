@@ -1,10 +1,8 @@
 import { useState } from 'react';
-import { BarChart3, PieChart, TrendingUp, TrendingDown, Users, AlertCircle } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { BarChart3, TrendingUp, TrendingDown, Users, AlertCircle } from 'lucide-react';
 
 export function ReportsWorkspace() {
   const [activeTab, setActiveTab] = useState<'subject' | 'class'>('class');
-  const navigate = useNavigate();
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
