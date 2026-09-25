@@ -14,8 +14,11 @@ export function Assignments() {
   // Form state
   const [title, setTitle] = useState('');
   const [subject, setSubject] = useState('');
-  const [classId, setClassId] = useState('C1');
+  const [classId, setClassId] = useState('10th A');
+  const [description, setDescription] = useState('');
+  const [publishDate, setPublishDate] = useState('');
   const [dueDate, setDueDate] = useState('');
+  const [attachments, setAttachments] = useState<string[]>([]);
 
   const loadData = () => {
     getAssignments().then(data => {
@@ -34,16 +37,22 @@ export function Assignments() {
       title,
       subject,
       classId,
+      description,
+      attachments,
+      publishDate,
       dueDate,
       submissionsCount: 0,
-      totalStudents: 30, // Mock count
+      totalStudents: 32, // Mock count
       status: 'Active'
     });
     alert('Assignment created successfully!');
     setIsNewModalOpen(false);
     setTitle('');
     setSubject('');
+    setDescription('');
+    setPublishDate('');
     setDueDate('');
+    setAttachments([]);
     loadData();
   };
 
@@ -118,23 +127,51 @@ export function Assignments() {
         <form onSubmit={handleCreateAssignment} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem' }}>Title</label>
-            <input required type="text" value={title} onChange={e => setTitle(e.target.value)} style={{ width: '100%', padding: '0.5rem' }} />
+            <input required type="text" className="input-field" value={title} onChange={e => setTitle(e.target.value)} style={{ width: '100%' }} />
+          </div>
+          <div style={{ display: 'flex', gap: '1rem' }}>
+            <div style={{ flex: 1 }}>
+              <label style={{ display: 'block', marginBottom: '0.5rem' }}>Subject</label>
+              <input required type="text" className="input-field" value={subject} onChange={e => setSubject(e.target.value)} style={{ width: '100%' }} />
+            </div>
+            <div style={{ flex: 1 }}>
+              <label style={{ display: 'block', marginBottom: '0.5rem' }}>Class</label>
+              <select className="input-field" value={classId} onChange={e => setClassId(e.target.value)} style={{ width: '100%' }}>
+                <option value="10th A">10th A</option>
+                <option value="10th B">10th B</option>
+                <option value="11th Science">11th Science</option>
+              </select>
+            </div>
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem' }}>Subject</label>
-            <input required type="text" value={subject} onChange={e => setSubject(e.target.value)} style={{ width: '100%', padding: '0.5rem' }} />
+            <label style={{ display: 'block', marginBottom: '0.5rem' }}>Description / Instructions</label>
+            <textarea required rows={3} className="input-field" value={description} onChange={e => setDescription(e.target.value)} style={{ width: '100%' }} />
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem' }}>Class</label>
-            <select value={classId} onChange={e => setClassId(e.target.value)} style={{ width: '100%', padding: '0.5rem' }}>
-              <option value="C1">Grade 10 - A</option>
-              <option value="C2">Grade 10 - B</option>
-              <option value="C3">Grade 11 - Science</option>
-            </select>
+            <label style={{ display: 'block', marginBottom: '0.5rem' }}>Attachments</label>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <button type="button" className="btn btn-secondary" onClick={() => setAttachments([...attachments, `file_${attachments.length+1}.pdf`])}>
+                Add File
+              </button>
+              <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{attachments.length} files attached</span>
+            </div>
+            {attachments.length > 0 && (
+              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
+                {attachments.map((a, i) => (
+                  <span key={i} className="badge" style={{ background: 'var(--bg-color)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }}>{a}</span>
+                ))}
+              </div>
+            )}
           </div>
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem' }}>Due Date</label>
-            <input required type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} style={{ width: '100%', padding: '0.5rem' }} />
+          <div style={{ display: 'flex', gap: '1rem' }}>
+            <div style={{ flex: 1 }}>
+              <label style={{ display: 'block', marginBottom: '0.5rem' }}>Publish Date</label>
+              <input type="date" className="input-field" value={publishDate} onChange={e => setPublishDate(e.target.value)} style={{ width: '100%' }} />
+            </div>
+            <div style={{ flex: 1 }}>
+              <label style={{ display: 'block', marginBottom: '0.5rem' }}>Due Date</label>
+              <input required type="date" className="input-field" value={dueDate} onChange={e => setDueDate(e.target.value)} style={{ width: '100%' }} />
+            </div>
           </div>
           <button type="submit" className="btn btn-primary" style={{ marginTop: '1rem' }}>Create Assignment</button>
         </form>

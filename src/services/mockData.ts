@@ -54,6 +54,9 @@ export interface Assignment {
   title: string;
   classId: string;
   subject: string;
+  description?: string;
+  attachments?: string[];
+  publishDate?: string;
   dueDate: string;
   submissionsCount: number;
   totalStudents: number;
@@ -70,8 +73,8 @@ export interface Submission {
   id: string;
   assignmentId: string;
   studentId: string;
-  submittedAt: string;
-  status: 'Graded' | 'Ungraded' | 'Late';
+  submittedAt?: string;
+  status: 'Submitted' | 'Pending' | 'Late' | 'Reviewed';
   score?: number;
   feedback?: string;
 }
@@ -247,14 +250,35 @@ export const saveMarks = async (examId: string, marks: Mark[]): Promise<any> => 
   }
 };
 
-export const getSubmissions = async (assignmentId: string): Promise<Submission[]> => {
+export const getSubmissions = async (assignmentId: string, totalStudents: number = 32): Promise<Submission[]> => {
   try {
     const res = await fetch(`${API_URL}/submissions?assignmentId=${assignmentId}`);
     if (!res.ok) throw new Error('API failed');
     return await res.json();
   } catch (error) {
     console.warn('Falling back to local db.json for submissions');
-    return ((db as any).submissions || []).filter((s: Submission) => s.assignmentId === assignmentId);
+    const existing = ((db as any).submissions || []).filter((s: Submission) => s.assignmentId === assignmentId);
+    if (existing.length > 0) return existing;
+    
+    // Generate mock submissions for a full class
+    const mockSubs: Submission[] = [];
+    for (let i = 1; i <= totalStudents; i++) {
+      let status: Submission['status'] = 'Pending';
+      if (i % 5 === 0) status = 'Late';
+      else if (i % 3 === 0) status = 'Reviewed';
+      else if (i % 2 === 0) status = 'Submitted';
+      
+      mockSubs.push({
+        id: `SUB${Date.now()}${i}`,
+        assignmentId,
+        studentId: `S${i}`,
+        submittedAt: status !== 'Pending' ? new Date(Date.now() - Math.random() * 86400000 * 3).toISOString() : undefined,
+        status,
+        score: status === 'Reviewed' ? Math.floor(Math.random() * 20) + 80 : undefined,
+        feedback: status === 'Reviewed' ? 'Good effort.' : undefined
+      });
+    }
+    return mockSubs;
   }
 };
 
@@ -272,7 +296,14 @@ export const getTeacherSubjects = async (teacherId: string): Promise<Subject[]> 
 
 export const getAssignment = async (id: string): Promise<Assignment | null> => {
   const assignments = await getAssignments();
-  return assignments.find(a => a.id === id) || null;
+  const assignment = assignments.find(a => a.id === id);
+  if (!assignment) return null;
+  return {
+    ...assignment,
+    description: assignment.description || 'Please complete the attached assignment and upload your work before the deadline.',
+    attachments: assignment.attachments || ['worksheet.pdf', 'reference_material.docx'],
+    publishDate: assignment.publishDate || new Date().toISOString().split('T')[0]
+  };
 };
 
 export const getExam = async (id: string): Promise<Exam | null> => {
