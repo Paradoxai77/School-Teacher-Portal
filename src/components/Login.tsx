@@ -1,20 +1,50 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Mail, Lock, Eye, ArrowUpRight, ArrowDownLeft, Home } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { getTeachers } from '../services/mockData';
 
 export function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login } = useAuth();
   
   const [email, setEmail] = useState('amit.sharma@school.edu');
   const [password, setPassword] = useState('password123');
   const [error, setError] = useState('');
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [name, setName] = useState('');
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get('mode') === 'signup') {
+      setIsSignUp(true);
+      setEmail('');
+      setPassword('');
+    }
+  }, [location]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    if (isSignUp) {
+      if (!name) {
+        setError('Name is required for sign up.');
+        return;
+      }
+      // Mock sign up logic
+      login({ 
+        id: 'new-user', 
+        name: name, 
+        email, 
+        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`, 
+        role: 'Class Teacher', 
+        subjects: ['General'] 
+      } as any);
+      navigate('/app');
+      return;
+    }
     try {
       const teachers = await getTeachers();
       const teacher = teachers.find(t => t.email === email && t.password === password);
@@ -64,7 +94,7 @@ export function Login() {
           </div>
           
           <h1 style={{ fontSize: '3.5rem', fontWeight: 400, color: 'var(--text-primary)', lineHeight: '1.1', marginBottom: '1rem' }}>
-            Welcome to <br /> SchoolEnterprise
+            {isSignUp ? 'Create an Account' : <>Welcome to <br /> SchoolEnterprise</>}
           </h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', maxWidth: '400px', marginBottom: '2rem' }}>
             Daily academic operations and teacher experience platform powered by modern technology.
@@ -78,6 +108,19 @@ export function Login() {
 
           {/* Form */}
           <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', maxWidth: '400px' }}>
+            {isSignUp && (
+              <div style={{ position: 'relative' }}>
+                <input 
+                  type="text" 
+                  required 
+                  className="input-field w-full" 
+                  placeholder="Full Name" 
+                  style={{ paddingLeft: '1.25rem' }} 
+                  value={name}
+                  onChange={e => setName(e.target.value)}
+                />
+              </div>
+            )}
             <div style={{ position: 'relative' }}>
               <Mail size={18} style={{ position: 'absolute', left: '1.25rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary-color)' }} />
               <input 
@@ -106,8 +149,17 @@ export function Login() {
             </div>
 
             <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '1rem', marginTop: '0.5rem' }}>
-              Login
+              {isSignUp ? 'Sign Up' : 'Login'}
             </button>
+            <div style={{ textAlign: 'center', marginTop: '1rem', fontSize: '0.95rem' }}>
+              {isSignUp ? 'Already have an account?' : "Don't have an account?"} {' '}
+              <span 
+                style={{ color: 'var(--primary-color)', cursor: 'pointer', fontWeight: 600 }} 
+                onClick={() => setIsSignUp(!isSignUp)}
+              >
+                {isSignUp ? 'Login' : 'Sign Up'}
+              </span>
+            </div>
             
           </form>
         </div>

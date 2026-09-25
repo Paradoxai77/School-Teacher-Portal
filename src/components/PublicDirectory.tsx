@@ -52,13 +52,22 @@ export function PublicDirectory() {
           </div>
         </div>
 
-        <button 
-          onClick={() => navigate('/login')}
-          className="btn btn-primary" 
-          style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.5rem' }}
-        >
-          <LogIn size={18} /> Login to Portal
-        </button>
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          <button 
+            onClick={() => navigate('/login')}
+            className="btn btn-secondary" 
+            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.5rem' }}
+          >
+            <LogIn size={18} /> Login
+          </button>
+          <button 
+            onClick={() => navigate('/login?mode=signup')}
+            className="btn btn-primary" 
+            style={{ padding: '0.75rem 1.5rem' }}
+          >
+            Sign Up
+          </button>
+        </div>
       </header>
 
       {/* Hero Section */}
