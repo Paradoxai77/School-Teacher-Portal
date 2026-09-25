@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
 import { getClasses, getAttendanceHistory, getAttendanceCorrections, saveAttendanceCorrection, type ClassInfo } from '../services/mockData';
 import { Calendar, Clock, Edit3, AlertCircle, BarChart2 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 export function AttendanceWorkspace() {
-  const [activeTab, setActiveTab] = useState<'entry' | 'history' | 'correction' | 'correctionHistory'>('entry');
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const initialTab = (searchParams.get('tab') as 'entry' | 'history' | 'correction' | 'correctionHistory') || 'entry';
+  const [activeTab, setActiveTab] = useState<'entry' | 'history' | 'correction' | 'correctionHistory'>(initialTab);
   const [classes, setClasses] = useState<ClassInfo[]>([]);
   const [history, setHistory] = useState<any[]>([]);
   const [corrections, setCorrections] = useState<any[]>([]);

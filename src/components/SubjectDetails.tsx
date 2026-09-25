@@ -127,7 +127,7 @@ export function SubjectDetails() {
                     <Users size={18} /> ~32 Students
                   </div>
                   <div style={{ marginTop: 'auto', paddingTop: '1rem' }}>
-                    <button className="btn btn-secondary text-sm" style={{ padding: '0.4rem 0.8rem' }} onClick={() => navigate('/app/classes')}>
+                    <button className="btn btn-secondary text-sm" style={{ padding: '0.4rem 0.8rem' }} onClick={() => navigate(`/app/classes/1`)}>
                       Go to Class Workspace <ChevronRight size={16} />
                     </button>
                   </div>

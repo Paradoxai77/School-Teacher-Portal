@@ -89,6 +89,7 @@ export function ClassDetails() {
     await saveAttendance(classInfo.id, records, attendancePeriod, attendanceDate);
     alert('Attendance saved successfully!');
     setIsAttendanceModalOpen(false);
+    navigate('/app/attendance');
   };
 
   if (loading) return <div>Loading class details...</div>;
@@ -403,7 +404,7 @@ export function ClassDetails() {
                         </td>
                         <td style={{ padding: '1rem', textAlign: 'right' }}>
                           {canEdit ? (
-                            <button className="btn btn-primary" style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }} onClick={() => navigate('/app/exams')}>
+                            <button className="btn btn-primary" style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }} onClick={() => navigate('/app/subjects')}>
                               <Edit3 size={14} style={{ display: 'inline', marginRight: '0.25rem' }} /> Manage
                             </button>
                           ) : (

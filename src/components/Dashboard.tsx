@@ -174,7 +174,7 @@ export function Dashboard() {
                     <span style={{ fontWeight: 500 }}>Attendance correction requests awaiting action</span>
                     <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>2 requests pending</span>
                   </div>
-                  <button className="btn btn-secondary text-sm" onClick={() => navigate('/app/attendance')}>View <ArrowRight size={14} /></button>
+                  <button className="btn btn-secondary text-sm" onClick={() => navigate('/app/attendance?tab=correctionHistory')}>View <ArrowRight size={14} /></button>
                 </li>
               </ul>
             </div>
