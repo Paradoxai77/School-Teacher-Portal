@@ -226,3 +226,98 @@ p {
 .badge-success { background: rgba(16, 185, 129, 0.1); color: var(--success); }
 .badge-warning { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
 .badge-danger { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+
+/* Responsive Utilities */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.sidebar-container {
+  width: 260px;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  border-right: 1px solid var(--border-color);
+  background: var(--surface-color-transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  transition: transform 0.3s ease, width 0.3s ease;
+  z-index: 1000;
+}
+
+.mobile-menu-btn {
+  display: none;
+}
+.mobile-overlay {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  /* Tablet */
+  .sidebar-container {
+    width: 80px;
+    padding: 1.5rem 0.5rem;
+    align-items: center;
+  }
+  .sidebar-text {
+    display: none;
+  }
+  .sidebar-container .btn {
+    justify-content: center;
+    padding: 0.5rem;
+  }
+  .teacher-profile {
+    display: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Mobile */
+  .sidebar-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 260px;
+    transform: translateX(-100%);
+    background: var(--surface-color);
+    align-items: stretch;
+  }
+  .sidebar-container.open {
+    transform: translateX(0);
+  }
+  .sidebar-text {
+    display: block;
+  }
+  .sidebar-container .btn {
+    justify-content: flex-start;
+    padding: 0.5rem 1.25rem;
+  }
+  .teacher-profile {
+    display: flex !important;
+  }
+  .mobile-menu-btn {
+    display: block;
+  }
+  .mobile-overlay.open {
+    display: block;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 999;
+  }
+  .main-content {
+    padding: 1rem !important;
+  }
+  h1 {
+    font-size: 1.5rem !important;
+  }
+  .modal-content {
+    width: 95% !important;
+    padding: 1rem !important;
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+  }
+}
